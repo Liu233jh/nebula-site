@@ -137,6 +137,8 @@ html.lenis{height:auto}
   border:1px solid rgba(255,255,255,.35);color:#fff;font-size:20px;cursor:pointer}
 .lb-cap{position:absolute;left:0;right:0;bottom:20px;text-align:center;font-family:var(--mono);
   font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.6)}
+.lightbox.on img{animation:lbImgIn .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes lbImgIn{from{opacity:0;transform:scale(.955)}to{opacity:1;transform:none}}
 
 /* ============ 笔记 ============ */
 .posts{margin-top:40px;border-top:1px solid rgba(5,13,31,.12)}
@@ -377,7 +379,7 @@ __HOME__
         <p>单文件、原生 HTML/CSS/JS，没有任何前端框架和第三方动画库。所有插画与音乐以 base64 内嵌，因此离线也能打开。动画全部支持 <code>prefers-reduced-motion</code>，开启减少动态效果后会退回静态页面。</p>
         <div class="pstack-wrap">
           <div class="pstack" data-mc>
-            <img class="psp ps1" src="__G1__" alt="快门 01"><img class="psp ps2" src="__G2__" alt="快门 02"><img class="psp ps3" src="__G4__" alt="快门 03">
+            <img class="psp ps1" src="__G1__" data-cap="快门 01 · 起稿界面构成稿" alt="快门 01"><img class="psp ps2" src="__G2__" data-cap="快门 02 · 数据流波形稿" alt="快门 02"><img class="psp ps3" src="__G4__" data-cap="快门 03 · 轨道构成稿" alt="快门 03">
           </div>
           <p class="ps-cap">SNAPSHOTS · 每一次生成留下的快门</p>
         <p class="visit-line" id="visitLine" hidden>本站累计访问 <b id="bzPv">—</b> 次 · 访客 <b id="bzUv">—</b> 人</p>
@@ -542,12 +544,12 @@ __JS__
 <style>
 .backbtn{position:fixed;top:calc(var(--hdr) + 14px);left:22px;z-index:78;
   font-family:var(--mono);font-size:11px;letter-spacing:.16em;padding:9px 16px;
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);
-  cursor:pointer;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;
-  transform:translateX(-8px)}
+  background:rgba(5,13,31,.88);border:1px solid rgba(5,13,31,.88);color:#fff;
+  cursor:pointer;backdrop-filter:blur(8px);opacity:0;pointer-events:none;
+  transition:opacity .4s,transform .45s cubic-bezier(.22,1,.36,1),border-color .25s,color .25s;
+  transform:translateX(-10px)}
 .backbtn.show{opacity:1;pointer-events:auto;transform:none}
 .backbtn:hover{border-color:var(--sky);color:var(--sky)}
-.gtop.light ~ .page .backbtn{background:rgba(5,13,31,.05);border-color:rgba(5,13,31,.22);color:rgba(5,13,31,.65)}
 @media(max-width:1023px){.backbtn{top:calc(var(--hdr) + 10px);left:14px;padding:8px 13px;font-size:10px}}
 </style>
 <style>
@@ -602,7 +604,7 @@ html:has(.mcur) a,html:has(.mcur) button,html:has(.mcur) [data-mc]{cursor:none}
 /* 拍立得堆叠（借 ayeez 相册，蓝白边） */
 .pstack-wrap{margin-top:26px}
 .pstack{position:relative;height:200px;max-width:560px}
-.psp{position:absolute;width:76%;height:158px;object-fit:cover;border-radius:8px;
+.psp{position:absolute;width:76%;height:158px;object-fit:cover;border-radius:8px;cursor:zoom-in;
   border:4px solid #fff;box-shadow:0 8px 24px rgba(5,13,31,.35);transition:transform .25s ease}
 .ps1{left:0;bottom:0;transform:rotate(-4deg);z-index:1}
 .ps2{left:11%;bottom:6px;transform:rotate(2deg);z-index:2}
