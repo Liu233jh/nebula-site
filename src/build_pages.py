@@ -70,15 +70,22 @@ figA = ('<figure class="art" aria-hidden="true"><div class="fbody">'
 
 ART = '<figure class="art" aria-hidden="true"><img src="__ART__" alt="" decoding="async"></figure>'
 
+ART_LOCAL = 'https://liu233jh.github.io/nebula-site/art'
+
 figB = ('<div class="pup" aria-hidden="true"><div class="pbody">'
-        f'<img class="pbase" src="{u("pbase")}" alt="">'
+        f'<img class="pbase" src="{ART_LOCAL}/pbase.png" alt="">'
         f'<img class="eopen" src="{u("eopen")}" alt="">'
         f'<img class="eclosed" src="{u("eclosed")}" alt="">'
         f'<div class="pbangs"><img src="{u("bangs")}" alt=""></div>'
         f'<img class="pleft" src="{u("pleft")}" alt="">'
         f'<div class="rtop"><img src="{u("rtop")}" alt="">'
-        f'<img class="rbot" src="{u("rbot")}" alt=""></div>'
+        f'<img class="rbot" src="{ART_LOCAL}/rbot.png" alt=""></div>'
         '</div></div>')
+
+os.makedirs(OUT + 'art', exist_ok=True)
+for f in ('pbase.png', 'rbot.png'):
+    open(OUT + 'art/' + f, 'wb').write(open(SRC + 'art/' + f, 'rb').read())
+print('art assets copied')
 
 A = shell.replace(ART, figA)
 B = shell.replace(ART, figB)

@@ -249,8 +249,8 @@ if(fine&&!reduced){
       var aF=spring(sF,wf+mv*0.45,14,6.0,dt);
       F.style.transform='rotate('+Math.max(-1.6,Math.min(1.6,aF)).toFixed(3)+'deg)';
     }
-    var tilt=spring(sH,Math.sin(t*0.55)*0.4+mv*0.08,18,6.0,dt);
-    B.style.transform='translateY('+(Math.sin(t*0.9)*3.2).toFixed(2)+'px) rotate('+tilt.toFixed(3)+'deg)';
+    var tilt=spring(sH,Math.sin(t*0.55)*0.55+mv*0.08,18,6.0,dt);
+    B.style.transform='translateY('+(Math.sin(t*0.9)*4.8).toFixed(2)+'px) rotate('+tilt.toFixed(3)+'deg)';
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
