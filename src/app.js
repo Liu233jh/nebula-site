@@ -297,7 +297,11 @@ $$('.site').forEach(function(card){
 /* ---------- 笔记展开 ---------- */
 $$('.post').forEach(function(p){
   var hd=$('.post-hd',p);
-  hd.addEventListener('click',function(){location.hash='#/journal/'+p.dataset.slug});
+  hd.addEventListener('click',function(){
+    var target='#/journal/'+p.dataset.slug;
+    if(location.hash===target){location.hash='#/journal';return}
+    location.hash=target;
+  });
 });
 
 /* ---------- 启动 ---------- */

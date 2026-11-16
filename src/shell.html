@@ -610,15 +610,16 @@ __JS__
 .pup .rbot{transform-origin:77.8% 53.3%;will-change:transform}
 </style>
 <style>
-.backbtn{position:fixed;top:calc(var(--hdr) + 14px);left:22px;z-index:78;
-  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.3em;padding:10px 18px 10px 15px;
-  background:rgba(255,255,255,.92);border:1px solid rgba(5,13,31,.24);color:var(--ink);
-  box-shadow:0 2px 14px rgba(5,13,31,.08);cursor:pointer;backdrop-filter:blur(8px);opacity:0;pointer-events:none;
-  transition:opacity .4s,transform .45s cubic-bezier(.22,1,.36,1),border-color .25s,color .25s,box-shadow .25s;
+.backbtn{position:fixed;top:calc(var(--hdr) + 6px);left:22px;z-index:78;
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.3em;padding:9px 18px 9px 15px;
+  background:rgba(255,255,255,.58);border:1px solid rgba(5,13,31,.14);color:var(--ink);
+  backdrop-filter:blur(16px) saturate(1.5);-webkit-backdrop-filter:blur(16px) saturate(1.5);
+  box-shadow:0 2px 14px rgba(5,13,31,.06);cursor:pointer;opacity:0;pointer-events:none;
+  transition:opacity .4s,transform .45s cubic-bezier(.22,1,.36,1),border-color .25s,color .25s,box-shadow .25s,background .25s;
   transform:translateX(-10px)}
 .backbtn.show{opacity:1;pointer-events:auto;transform:none}
-.backbtn:hover{border-color:var(--sky);color:var(--sky);box-shadow:0 6px 20px rgba(10,102,255,.16)}
-@media(max-width:1023px){.backbtn{top:calc(var(--hdr) + 10px);left:14px;padding:8px 14px 8px 12px;font-size:11px}}
+.backbtn:hover{border-color:var(--sky);color:var(--sky);background:rgba(255,255,255,.82);box-shadow:0 6px 20px rgba(10,102,255,.14)}
+@media(max-width:1023px){.backbtn{top:calc(var(--hdr) + 4px);left:14px;padding:7px 14px 7px 12px;font-size:11px}}
 /* ---- 据点页：浏览器窗口卡片 ---- */
 .sites-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(430px,100%),1fr));gap:38px 34px;margin-top:46px}
 .site{display:block;text-decoration:none;color:inherit}
