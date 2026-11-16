@@ -354,8 +354,8 @@ html.lenis{height:auto}
 
 /* ============ 内页通用 ============ */
 .sheet{max-width:1300px;margin:0 auto;padding-left:clamp(18px,4.4vw,64px);padding-right:clamp(18px,4.4vw,64px)}
-.crumb{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:rgba(5,13,31,.4);
-  display:flex;align-items:center;gap:12px;width:100%}
+.crumb{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.28em;color:rgba(5,13,31,.55);
+  display:flex;align-items:center;gap:12px;width:100%;margin-bottom:2px}
 .crumb::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(5,13,31,.26),rgba(5,13,31,.08))}
 .bigtitle{font-family:var(--disp);font-weight:900;font-size:clamp(34px,5.4vw,74px);line-height:1.04;
   letter-spacing:-.03em;margin:18px 0 14px;color:var(--ink)}
@@ -863,7 +863,7 @@ image: line-art, blue on white
       <a class="site" data-rv href="https://daily-mashup.onrender.com" target="_blank" rel="noopener">
         <div class="frame">
           <div class="fbar"><i></i><i></i><i></i><span class="furl">daily-mashup.onrender.com</span></div>
-          <div class="fview" data-roll><img src="https://liu233jh.github.io/nebula-site/shots/mashup.webp" alt="今日盲盒九格报纸截图" loading="lazy"></div>
+          <div class="fview" data-roll><img style="--roll:154%;--rollto:-35%" src="https://liu233jh.github.io/nebula-site/shots/mashup.webp" alt="今日盲盒九格报纸截图" loading="lazy"></div>
         </div>
         <div class="smeta"><span class="sno">02</span>
           <h3>今日盲盒 · Daily Mashup</h3>
@@ -1902,13 +1902,13 @@ setTimeout(revealAll,400);
 <style>
 .backbtn{position:fixed;top:calc(var(--hdr) + 6px);left:22px;z-index:78;
   font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.3em;padding:9px 18px 9px 15px;
-  background:rgba(255,255,255,.58);border:1px solid rgba(5,13,31,.14);color:var(--ink);
-  backdrop-filter:blur(16px) saturate(1.5);-webkit-backdrop-filter:blur(16px) saturate(1.5);
-  box-shadow:0 2px 14px rgba(5,13,31,.06);cursor:pointer;opacity:0;pointer-events:none;
+  background:rgba(255,255,255,.34);border:1px solid rgba(5,13,31,.10);color:var(--ink);
+  backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
+  box-shadow:0 2px 12px rgba(5,13,31,.05);cursor:pointer;opacity:0;pointer-events:none;
   transition:opacity .4s,transform .45s cubic-bezier(.22,1,.36,1),border-color .25s,color .25s,box-shadow .25s,background .25s;
   transform:translateX(-10px)}
 .backbtn.show{opacity:1;pointer-events:auto;transform:none}
-.backbtn:hover{border-color:var(--sky);color:var(--sky);background:rgba(255,255,255,.82);box-shadow:0 6px 20px rgba(10,102,255,.14)}
+.backbtn:hover{border-color:var(--sky);color:var(--sky);background:rgba(255,255,255,.72);box-shadow:0 6px 20px rgba(10,102,255,.14)}
 @media(max-width:1023px){.backbtn{top:calc(var(--hdr) + 4px);left:14px;padding:7px 14px 7px 12px;font-size:11px}}
 /* ---- 据点页：浏览器窗口卡片 ---- */
 .sites-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(430px,100%),1fr));gap:38px 34px;margin-top:46px}
@@ -1928,8 +1928,8 @@ setTimeout(revealAll,400);
 .fview{aspect-ratio:16/10;overflow:hidden;position:relative;background:#0a1226}
 .fview img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;
   transition:transform 3s cubic-bezier(.22,1,.36,1),filter .4s;will-change:transform}
-.fview[data-roll] img{height:200%}
-.site:hover .fview img{transform:translateY(-49%)}
+.fview[data-roll] img{height:var(--roll,200%)}
+.site:hover .fview[data-roll] img{transform:translateY(var(--rollto,-49%))}
 .site:hover .fview:not([data-roll]) img{transform:scale(1.07) translateY(-3.2%)}
 .smeta{padding:18px 4px 2px;transition:transform .55s cubic-bezier(.22,1,.36,1);will-change:transform}
 .smeta .sno{font-family:var(--mono);font-size:11px;color:var(--sky);letter-spacing:.2em}
