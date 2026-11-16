@@ -268,6 +268,15 @@ $$('.work').forEach(function(w){
 });
 if(lb)lb.addEventListener('click',function(e){if(e.target===lb)closeLb()});
 var lc=$('#lbClose');if(lc)lc.addEventListener('click',closeLb);
+/* 关于页快门相册：点击开灯箱 */
+$$('.psp').forEach(function(img){
+  img.addEventListener('click',function(){
+    if(!lb)return;
+    lbImg.src=img.dataset.full||img.src;
+    lbCap.textContent=img.dataset.cap||img.alt||'';
+    lb.classList.add('on');
+  });
+});
 
 /* ---------- 笔记展开 ---------- */
 $$('.post').forEach(function(p){
