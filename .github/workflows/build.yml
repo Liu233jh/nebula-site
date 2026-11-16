@@ -1,0 +1,33 @@
+name: build-pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build pages from src
+        run: python3 src/build_pages.py
+
+      - name: Commit and push outputs
+        run: |
+          git config user.name "nebula-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add a/ b/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "build: pages from src [skip ci]"
+            git push
+          fi
