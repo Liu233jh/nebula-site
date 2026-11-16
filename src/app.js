@@ -278,6 +278,22 @@ $$('.psp').forEach(function(img){
   });
 });
 
+/* 据点页：卡片磁吸（借鉴 cyber-relic-scanner 文字吸附） */
+$$('.site').forEach(function(card){
+  if(!fine)return;
+  var fr=$('.frame',card),meta=$('.smeta',card);
+  if(!fr||!meta)return;
+  card.addEventListener('pointermove',function(e){
+    var r=card.getBoundingClientRect();
+    var dx=(e.clientX-r.left)/r.width-.5, dy=(e.clientY-r.top)/r.height-.5;
+    fr.style.transform='translate('+(dx*7).toFixed(1)+'px,'+(dy*5-3).toFixed(1)+'px)';
+    meta.style.transform='translate('+(dx*4).toFixed(1)+'px,'+(dy*3).toFixed(1)+'px)';
+  });
+  card.addEventListener('pointerleave',function(){
+    fr.style.transform='';meta.style.transform='';
+  });
+});
+
 /* ---------- 笔记展开 ---------- */
 $$('.post').forEach(function(p){
   var hd=$('.post-hd',p);

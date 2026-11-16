@@ -215,6 +215,7 @@ html.lenis{height:auto}
     <a href="#/works" data-route="works">作品</a>
     <a href="#/journal" data-route="journal">笔记</a>
     <a href="#/talks" data-route="talks">说说</a>
+    <a href="#/sites" data-route="sites">据点</a>
     <a href="#/log" data-route="log">日志</a>
     <a href="#/about" data-route="about">关于</a>
   </nav>
@@ -231,8 +232,9 @@ html.lenis{height:auto}
     <a href="#/works" data-route="works"><em>02</em><span>作品<small>WORKS</small></span></a>
     <a href="#/journal" data-route="journal"><em>03</em><span>笔记<small>JOURNAL</small></span></a>
     <a href="#/talks" data-route="talks"><em>04</em><span>说说<small>TALKS</small></span></a>
-    <a href="#/log" data-route="log"><em>05</em><span>日志<small>BUILD LOG</small></span></a>
-    <a href="#/about" data-route="about"><em>06</em><span>关于<small>ABOUT</small></span></a>
+    <a href="#/sites" data-route="sites"><em>05</em><span>据点<small>SITES</small></span></a>
+    <a href="#/log" data-route="log"><em>06</em><span>日志<small>BUILD LOG</small></span></a>
+    <a href="#/about" data-route="about"><em>07</em><span>关于<small>ABOUT</small></span></a>
   </nav>
   <div class="drawer-foot">NEBULA · FICTIONAL DEMO<br>非真实服务</div>
 </aside>
@@ -298,7 +300,7 @@ __HOME__
         <div class="post-hd"><span class="post-date">2026.11.16</span><h2 class="post-tt">人物为什么会动：先拆图，再谈动画</h2><span class="post-plus"></span></div>
         <div class="post-bd"><div class="post-bd-in">
           <p>最开始我想在一张完整的插画上做眨眼和飘发，结果怎么做都不对。后来去看木偶动画的制作流程，才发现顺序从一开始就反了：这类动效的第一步不是写动画，是<strong>把图拆开</strong>。</p>
-          <p>标准做法只有三件事：分层、锚点、摆动。每一撮头发单独一层，锚点设在发根，然后让它绕着发根摆。发根不动，发梢才有“被风吹”的感觉。没有分层，无论用多高级的曲线，都只是一张贴纸在晃。</p>
+          <p>标准做法只有三件事：分层、锚点、摆动。每一撮头发单独一层，锚点设在发根，然后让它绕着发根摆。发根不动，发梢才有"被风吹"的感觉。没有分层，无论用多高级的曲线，都只是一张贴纸在晃。</p>
           <p>所以这一版的人物被拆成了三层：左发束、右马尾、身体。两束头发各有一个弹簧，周期不同、相位不同，叠起来才不会像钟摆一样规律得发假。</p>
           <div class="post-tags"><span>PUPPET</span><span>LAYERS</span><span>SPRING</span></div>
         </div></div>
@@ -306,15 +308,15 @@ __HOME__
       <article class="post" data-slug="spacing" data-tags="css">
         <div class="post-hd"><span class="post-date">2026.11.15</span><h2 class="post-tt">留白太大，往往不是留白的问题</h2><span class="post-plus"></span></div>
         <div class="post-bd"><div class="post-bd-in">
-          <p>有一版页面被评价“每段底部都空着一大块”。我一开始去调 padding，越调越糟。真正的原因有两个：几个板块都写了 <code>padding-top:0</code>，导致所有板块共用同一套间距，疏密完全没有差别；章节编号那根线被一条针对正文的 <code>max-width</code> 规则顺带压短了，留白失去了边界。</p>
-          <p>后来的处理是：让疏密交替，而不是统一收紧；让标题贴近它管的内容，段间距留给板块之间；把标尺修回贯穿整行。留白一旦有了边界，读起来就是“透气”，而不是“没做完”。</p>
+          <p>有一版页面被评价"每段底部都空着一大块"。我一开始去调 padding，越调越糟。真正的原因有两个：几个板块都写了 <code>padding-top:0</code>，导致所有板块共用同一套间距，疏密完全没有差别；章节编号那根线被一条针对正文的 <code>max-width</code> 规则顺带压短了，留白失去了边界。</p>
+          <p>后来的处理是：让疏密交替，而不是统一收紧；让标题贴近它管的内容，段间距留给板块之间；把标尺修回贯穿整行。留白一旦有了边界，读起来就是"透气"，而不是"没做完"。</p>
           <div class="post-tags"><span>SPACING</span><span>CSS</span></div>
         </div></div>
       </article>
       <article class="post" data-slug="boot" data-tags="motion">
         <div class="post-hd"><span class="post-date">2026.11.14</span><h2 class="post-tt">为什么不做全屏 Loading</h2><span class="post-plus"></span></div>
         <div class="post-bd"><div class="post-bd-in">
-          <p>全屏开屏动画很诱人，但它有一个实际代价：用户要等它演完才能看到内容。这个站最后选的是一个 1.6 秒的开屏——字母逐字落位、一条线展开，然后就退出，不阻塞任何点击，也提供“跳过”。</p>
+          <p>全屏开屏动画很诱人，但它有一个实际代价：用户要等它演完才能看到内容。这个站最后选的是一个 1.6 秒的开屏——字母逐字落位、一条线展开，然后就退出，不阻塞任何点击，也提供"跳过"。</p>
           <p>判断标准很简单：开屏是品牌的门面，不是内容的门卫。它负责建立气质，不该负责让人等待。</p>
           <div class="post-tags"><span>MOTION</span><span>LCP</span></div>
         </div></div>
@@ -322,7 +324,7 @@ __HOME__
       <article class="post" data-slug="color" data-tags="design">
         <div class="post-hd"><span class="post-date">2026.11.13</span><h2 class="post-tt">蓝色主题里，为什么不能有第二种强调色</h2><span class="post-plus"></span></div>
         <div class="post-bd"><div class="post-bd-in">
-          <p>曾经为了“更有设计感”，在蓝色页面里加了洋红做点缀。实际效果是：视线被切碎，读者不知道该看哪里。强调色的作用是建立优先级，两个强调色等于没有优先级。</p>
+          <p>曾经为了"更有设计感"，在蓝色页面里加了洋红做点缀。实际效果是：视线被切碎，读者不知道该看哪里。强调色的作用是建立优先级，两个强调色等于没有优先级。</p>
           <p>现在整站只有蓝、青、白和纸色。层次靠字重、描边、虚实和空间来做，而不是靠再加一个颜色。</p>
           <div class="post-tags"><span>COLOR</span><span>HIERARCHY</span></div>
         </div></div>
@@ -349,9 +351,75 @@ __HOME__
   </div>
 </section>
 
+<section class="page" data-page="sites">
+  <div class="pg-body sheet">
+    <p class="crumb">05 / SITES</p>
+    <h1 class="bigtitle">据点，<em>同一片星云的其他角落</em></h1>
+    <p class="lead">这里收的不是别人，是我自己搭的站。窗口里的截图可以直接滚着看——悬停上去，就像亲手滚动了一次别人的首页。卡片会轻轻朝指针吸过来，这个手感来自第五个据点的文字避让实验。</p>
+    <div class="sites-grid">
+      <a class="site" data-rv href="https://liu233jh.github.io/nebula-site/" target="_blank" rel="noopener">
+        <div class="frame">
+          <div class="fbar"><i></i><i></i><i></i><span class="furl">liu233jh.github.io/nebula-site</span></div>
+          <div class="fview"><img src="__SHOTS__/entry.webp" alt="NEBULA 入口页截图" loading="lazy"></div>
+        </div>
+        <div class="smeta"><span class="sno">01</span>
+          <h3>NEBULA · 入口</h3>
+          <p>本站的大门——同一套内容的两个平行版本，只有人物动效不同：阻尼视差，或五弹簧木偶。</p>
+          <div class="stags"><span>双版本</span><span>星空开屏</span><span>零依赖</span></div>
+        </div>
+      </a>
+      <a class="site" data-rv href="https://daily-mashup.onrender.com" target="_blank" rel="noopener">
+        <div class="frame">
+          <div class="fbar"><i></i><i></i><i></i><span class="furl">daily-mashup.onrender.com</span></div>
+          <div class="fview" data-roll><img src="__SHOTS__/mashup.webp" alt="今日盲盒九格报纸截图" loading="lazy"></div>
+        </div>
+        <div class="smeta"><span class="sno">02</span>
+          <h3>今日盲盒 · Daily Mashup</h3>
+          <p>一张每天自动换版的九格报纸：天气、萌宠、冷笑话、番剧、游戏折扣，全部来自 9 个公开接口现抓。</p>
+          <div class="stags"><span>9 个 API</span><span>双部署</span><span>零成本</span></div>
+        </div>
+      </a>
+      <a class="site" data-rv href="https://daily-mashup-music.onrender.com" target="_blank" rel="noopener">
+        <div class="frame">
+          <div class="fbar"><i></i><i></i><i></i><span class="furl">daily-mashup-music.onrender.com</span></div>
+          <div class="fview" data-roll><img src="__SHOTS__/luozhen.webp" alt="落针音乐榜截图" loading="lazy"></div>
+        </div>
+        <div class="smeta"><span class="sno">03</span>
+          <h3>落针 · 音乐副刊</h3>
+          <p>今日盲盒的副刊：国语 / 日语 / 英文三榜，每日各取二十五首，只引词条不托管音源，与正刊期号同源。</p>
+          <div class="stags"><span>音乐三榜</span><span>两站联动</span><span>黑胶转盘</span></div>
+        </div>
+      </a>
+      <a class="site" data-rv href="https://liu233jh.github.io/oregairu-fuwari/" target="_blank" rel="noopener">
+        <div class="frame">
+          <div class="fbar"><i></i><i></i><i></i><span class="furl">liu233jh.github.io/oregairu-fuwari</span></div>
+          <div class="fview" data-roll><img src="__SHOTS__/fuwari.webp" alt="春物语录角色页截图" loading="lazy"></div>
+        </div>
+        <div class="smeta"><span class="sno">04</span>
+          <h3>春物语录</h3>
+          <p>Astro + Fuwari 的春物粉丝站：450 条语录可筛可选，三个角色接入 Live2D，另有 14 篇逐季导读。GitHub Pages 与 Render 双入口。</p>
+          <div class="stags"><span>Live2D</span><span>450 条语录</span><span>Pagefind</span></div>
+        </div>
+      </a>
+      <a class="site" data-rv href="https://liu233jh.github.io/cyber-relic-scanner/" target="_blank" rel="noopener">
+        <div class="frame">
+          <div class="fbar"><i></i><i></i><i></i><span class="furl">liu233jh.github.io/cyber-relic-scanner</span></div>
+          <div class="fview"><img src="__SHOTS__/crs.webp" alt="Cyber Relic Scanner 3D 场景截图" loading="lazy"></div>
+        </div>
+        <div class="smeta"><span class="sno">05</span>
+          <h3>Cyber-Relic Scanner</h3>
+          <p>Pretext 3D 文字实验：逐帧测量 3D 主体的占位区间，让文字绕开它“吸”在模型周围——本页卡片的磁吸手感就是从它借来的。</p>
+          <div class="stags"><span>3D 场景</span><span>文字避让</span><span>实验场</span></div>
+        </div>
+      </a>
+    </div>
+    <div class="gbox" data-gb></div>
+  </div>
+</section>
+
 <section class="page" data-page="log">
   <div class="pg-body sheet">
-    <p class="crumb">05 / BUILD LOG</p>
+    <p class="crumb">06 / BUILD LOG</p>
     <h1 class="bigtitle">造站日志，<em>每一版都留痕</em></h1>
     <p class="lead">从一张海报到五弹簧木偶，版本号只涨不跌。回滚有备份，前进有日志。</p>
     <ol class="btl">
@@ -397,7 +465,7 @@ __HOME__
         <ul class="spec">
           <li><b>STACK</b><span>HTML / CSS / 原生 JS</span></li>
           <li><b>DEPENDENCY</b><span>0 个第三方库</span></li>
-          <li><b>PAGES</b><span>首页 / 作品 / 笔记 / 关于</span></li>
+          <li><b>PAGES</b><span>首页 / 作品 / 笔记 / 说说 / 据点 / 日志 / 关于</span></li>
           <li><b>MOTION</b><span>弹簧物理 + 滚动编排</span></li>
           <li><b>ILLUSTRATION</b><span>AI 生成，手工分层</span></li>
           <li><b>STATUS</b><span>虚构演示，非真实服务</span></li>
@@ -543,14 +611,46 @@ __JS__
 </style>
 <style>
 .backbtn{position:fixed;top:calc(var(--hdr) + 14px);left:22px;z-index:78;
-  font-family:var(--mono);font-size:11px;letter-spacing:.16em;padding:9px 16px;
-  background:rgba(5,13,31,.88);border:1px solid rgba(5,13,31,.88);color:#fff;
-  cursor:pointer;backdrop-filter:blur(8px);opacity:0;pointer-events:none;
-  transition:opacity .4s,transform .45s cubic-bezier(.22,1,.36,1),border-color .25s,color .25s;
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.3em;padding:10px 18px 10px 15px;
+  background:rgba(255,255,255,.92);border:1px solid rgba(5,13,31,.24);color:var(--ink);
+  box-shadow:0 2px 14px rgba(5,13,31,.08);cursor:pointer;backdrop-filter:blur(8px);opacity:0;pointer-events:none;
+  transition:opacity .4s,transform .45s cubic-bezier(.22,1,.36,1),border-color .25s,color .25s,box-shadow .25s;
   transform:translateX(-10px)}
 .backbtn.show{opacity:1;pointer-events:auto;transform:none}
-.backbtn:hover{border-color:var(--sky);color:var(--sky)}
-@media(max-width:1023px){.backbtn{top:calc(var(--hdr) + 10px);left:14px;padding:8px 13px;font-size:10px}}
+.backbtn:hover{border-color:var(--sky);color:var(--sky);box-shadow:0 6px 20px rgba(10,102,255,.16)}
+@media(max-width:1023px){.backbtn{top:calc(var(--hdr) + 10px);left:14px;padding:8px 14px 8px 12px;font-size:11px}}
+/* ---- 据点页：浏览器窗口卡片 ---- */
+.sites-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(430px,100%),1fr));gap:38px 34px;margin-top:46px}
+.site{display:block;text-decoration:none;color:inherit}
+.site .frame{display:block;border:1px solid rgba(5,13,31,.16);border-radius:10px 10px 6px 6px;overflow:hidden;
+  background:#fff;box-shadow:0 16px 38px -20px rgba(5,13,31,.28);
+  transition:transform .55s cubic-bezier(.22,1,.36,1),box-shadow .4s,border-color .3s;will-change:transform}
+.site:hover .frame{border-color:rgba(10,102,255,.45);box-shadow:0 22px 48px -18px rgba(10,102,255,.3)}
+.fbar{display:flex;align-items:center;gap:6px;padding:10px 13px;
+  background:linear-gradient(#f5f7fb,#edf1f7);border-bottom:1px solid rgba(5,13,31,.08)}
+.fbar i{width:9px;height:9px;border-radius:50%;background:rgba(5,13,31,.16);flex:none}
+.fbar i:first-child{background:rgba(77,163,255,.55)}
+.furl{margin-left:9px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:rgba(5,13,31,.52);
+  background:#fff;border:1px solid rgba(5,13,31,.09);border-radius:99px;padding:3px 12px;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;transition:color .3s,border-color .3s}
+.site:hover .furl{color:var(--sky);border-color:rgba(10,102,255,.4)}
+.fview{aspect-ratio:16/10;overflow:hidden;position:relative;background:#0a1226}
+.fview img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;
+  transition:transform 3s cubic-bezier(.22,1,.36,1),filter .4s;will-change:transform}
+.fview[data-roll] img{height:200%}
+.site:hover .fview img{transform:translateY(-49%)}
+.site:hover .fview:not([data-roll]) img{transform:scale(1.07) translateY(-3.2%)}
+.smeta{padding:18px 4px 2px;transition:transform .55s cubic-bezier(.22,1,.36,1);will-change:transform}
+.smeta .sno{font-family:var(--mono);font-size:11px;color:var(--sky);letter-spacing:.2em}
+.smeta h3{margin:6px 0 8px;font-size:19px;letter-spacing:.04em;display:flex;align-items:baseline;gap:10px}
+.smeta h3::after{content:'';flex:1;height:1px;background:rgba(5,13,31,.12);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.site:hover .smeta h3::after{transform:scaleX(1)}
+.smeta p{font-size:12.5px;line-height:1.85;color:rgba(5,13,31,.62);max-width:46em}
+.stags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stags span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:rgba(5,13,31,.55);
+  border:1px solid rgba(5,13,31,.14);border-radius:99px;padding:3px 11px;transition:border-color .3s,color .3s}
+.site:hover .stags span{border-color:rgba(10,102,255,.4);color:var(--sky)}
+@media(max-width:1023px){.sites-grid{gap:28px}.smeta h3{font-size:17px}}
 </style>
 <style>
 .pl-buf{position:absolute;left:0;top:0;height:100%;background:rgba(255,255,255,.14);width:0;pointer-events:none}

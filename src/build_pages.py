@@ -53,6 +53,7 @@ shell = (shell.replace('__SINDEX__', json.dumps(sidx, ensure_ascii=False))
               .replace('__CSS_BASE__', css)
               .replace('__LENIS__', rd('lenis.min.js'))
               .replace('__HOME__', home)
+              .replace('__SHOTS__', 'https://liu233jh.github.io/nebula-site/shots')
               .replace('__JS__', rd('app.js')))
 
 for i in range(1, 5):
@@ -87,5 +88,14 @@ os.makedirs(OUT + 'a', exist_ok=True)
 os.makedirs(OUT + 'b', exist_ok=True)
 open(OUT + 'a/index.html', 'w', encoding='utf-8').write(A)
 open(OUT + 'b/index.html', 'w', encoding='utf-8').write(B)
+
+# 据点页截图：src/shots/*.b64 -> 仓库根 shots/*.webp
+import base64, glob
+os.makedirs(OUT + 'shots', exist_ok=True)
+for b64 in sorted(glob.glob(SRC + 'shots/*.b64')):
+    name = os.path.basename(b64)[:-4]
+    open(OUT + 'shots/' + name, 'wb').write(base64.b64decode(open(b64, encoding='ascii').read()))
+    print('shot', name)
+
 print('A', os.path.getsize(OUT + 'a/index.html') // 1024, 'KB')
 print('B', os.path.getsize(OUT + 'b/index.html') // 1024, 'KB')
