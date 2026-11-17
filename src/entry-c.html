@@ -64,6 +64,8 @@ h1 span{display:inline-block;opacity:0;animation:drop .55s cubic-bezier(.22,1,.3
 .mic.rec::after{animation-delay:.8s}
 @keyframes pulse{from{transform:scale(1);opacity:.8}to{transform:scale(1.55);opacity:0}}
 .mic .t,.tts-box .t{font-size:11px;letter-spacing:.14em;color:rgba(5,13,31,.5)}
+.lvl{width:70%;height:6px;background:rgba(5,13,31,.08);border-radius:99px;overflow:hidden}
+.lvl i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),#c0392b);transition:width .1s}
 .wave{width:100%;height:64px;background:linear-gradient(160deg,#050d1f,#0a1b3e);border:1px solid var(--hair);display:none}
 .asr-out{width:100%;min-height:110px;resize:vertical;border:1px solid var(--hair);background:rgba(5,13,31,.02);font-family:var(--mono);font-size:12.5px;line-height:1.9;padding:12px;color:var(--ink);outline:none}
 .tts-box{border:1px solid var(--hair);background:rgba(10,102,255,.03);padding:20px;display:flex;flex-direction:column;gap:12px}
@@ -146,6 +148,7 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
       <div class="mic">
         <div class="mic-ring" id="micRing">🎙</div>
         <span class="t" id="micT">点击开始录音（≤120 秒）</span>
+        <div class="lvl"><i id="micLvl"></i></div>
         <div class="status" id="asrStatus">待命</div>
         <textarea class="asr-out" id="asrOut" placeholder="你说的话会出现在这里，可编辑后再让机器朗读" spellcheck="false"></textarea>
       </div>
@@ -156,9 +159,10 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
         <canvas class="wave" id="wave" width="600" height="64"></canvas>
         <audio id="ttsAudio" controls style="width:100%" hidden></audio>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn" id="ttsBtn">合成朗读</button>
-          <button class="btn ghost" id="asrToTts">转写 → 朗读</button>
+          <button class="btn" id="ttsBtn">朗读右侧文本</button>
+          <button class="btn ghost" id="asrToTts">复读我的话</button>
         </div>
+        <label class="sw"><input type="checkbox" id="autoEcho" checked>转写完自动复读</label>
         <div class="status" id="ttsStatus">待命</div>
       </div>
     </div>
@@ -319,7 +323,8 @@ function echoPost(path,body,timeout){
       ttsText=document.getElementById('ttsText'),ttsBtn=document.getElementById('ttsBtn'),
       ttsStatus=document.getElementById('ttsStatus'),audio=document.getElementById('ttsAudio'),
       wave=document.getElementById('wave'),vopts=document.querySelectorAll('.vopt[data-v]');
-  var voice='stella',rec=false,actx=null,proc=null,stream=null,chunks=[],recStart=0,animId=0;
+  var voice='stella',rec=false,actx=null,proc=null,stream=null,chunks=[],recStart=0,animId=0,peak=0;
+  var micLvl=document.getElementById('micLvl');
   if(!ECHO_API){
     document.getElementById('offVoice').hidden=false;
     ttsBtn.disabled=true;
@@ -337,8 +342,17 @@ function echoPost(path,body,timeout){
   }
   function stop(){
     rec=false;micRing.classList.remove('rec');
+    micLvl.style.width='0';
     try{stream&&stream.getTracks().forEach(function(t){t.stop()});proc&&proc.disconnect();actx&&actx.close()}catch(e){}
     if(!chunks.length){micT.textContent='没录到声音，重试';return}
+    /* 静音检测：峰值过小 = 麦克风根本没收到声音，直接拦截不浪费识别费 */
+    if(peak<0.02){
+      chunks=[];
+      asrStatus.className='status err';
+      asrStatus.textContent='麦克风全程静音——检查：①浏览器是否允许麦克风权限 ②手机是否静音或被微信语音占用 ③换 Safari/Chrome 重试';
+      micT.textContent='点击重试';
+      return;
+    }
     var rate=actx.sampleRate||44100;
     var blob=wav(chunks,rate);chunks=[];
     asrStatus.className='status';asrStatus.textContent='转写中……';
@@ -347,29 +361,50 @@ function echoPost(path,body,timeout){
       .then(function(r){return r.json().then(function(j){j._status=r.status;return j})})
       .then(function(j){
         if(j._status!==200){asrStatus.className='status err';asrStatus.textContent=echoErr(j);return}
-        asrOut.value=j.text||'（没听清）';
+        var txt=j.text||'';
+        asrOut.value=txt;
         if(j.charged!==undefined){spentBy.asr+=j.charged;updCost('asr')}
         asrStatus.className='status';asrStatus.textContent='转写完成 · '+(j.duration_ms/1000).toFixed(1)+'s · ¥'+(j.charged||0).toFixed(3);
+        /* 回声：转写有效且勾了自动复读 → 直接朗读回去 */
+        if(txt&&txt!=='（没听清）'&&document.getElementById('autoEcho').checked){
+          ttsText.value=txt.slice(0,2000);
+          ttsBtn.click();
+        }
       })
       .catch(function(){asrStatus.className='status err';asrStatus.textContent='转写失败——后端唤醒中或网络问题，稍后再试'});
   }
   micRing.addEventListener('click',function(){
     if(rec){stop();micT.textContent='已停止';return}
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){asrStatus.className='status err';asrStatus.textContent='浏览器不支持录音';return}
-    navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true}}).then(function(s){
-      stream=s;actx=new (window.AudioContext||window.webkitAudioContext)();
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){asrStatus.className='status err';asrStatus.textContent='浏览器不支持录音——换 Safari 或 Chrome 试试';return}
+    /* 关掉浏览器自动增益/降噪/回声消除：这些处理经常把手机端人声滤成静音 */
+    navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false,sampleRate:48000}}).then(function(s){
+      stream=s;
+      try{actx=new (window.AudioContext||window.webkitAudioContext)({sampleRate:48000})}catch(e){actx=new (window.AudioContext||window.webkitAudioContext)()}
+      if(actx.state==='suspended')actx.resume();
       proc=actx.createScriptProcessor(4096,1,1);
       var src=actx.createMediaStreamSource(s);
-      chunks=[];recStart=Date.now();rec=true;micRing.classList.add('rec');
-      micT.textContent='录音中…点击停止（最长 120 秒）';
+      chunks=[];peak=0;recStart=Date.now();rec=true;micRing.classList.add('rec');
+      micT.textContent='录音中…对着音量条说话，条动了才录到';
+      asrStatus.className='status';asrStatus.textContent='录音中';
       proc.onaudioprocess=function(e){
         if(!rec)return;
         var d=e.inputBuffer.getChannelData(0);
-        for(var i=0;i<d.length;i++)chunks.push(d[i]);
+        for(var i=0;i<d.length;i++){
+          var a=Math.abs(d[i]);
+          if(a>peak)peak=a;
+          chunks.push(d[i]);
+        }
+        /* 实时音量电平：条不动 = 麦克风没声音 */
+        var rms=0;for(var i=0;i<d.length;i++)rms+=d[i]*d[i];
+        rms=Math.sqrt(rms/d.length);
+        micLvl.style.width=Math.min(100,rms*400)+'%';
         if(Date.now()-recStart>=120000)stop();
       };
       src.connect(proc);proc.connect(actx.destination);
-    }).catch(function(){asrStatus.className='status err';asrStatus.textContent='麦克风权限被拒——浏览器地址栏里允许一下麦克风'});
+    }).catch(function(e){
+      asrStatus.className='status err';
+      asrStatus.textContent='麦克风权限被拒——浏览器地址栏左侧（或手机系统设置）里允许麦克风';
+    });
   });
   function drawWave(){
     var x=wave.getContext('2d');x.clearRect(0,0,wave.width,wave.height);
