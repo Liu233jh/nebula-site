@@ -207,24 +207,25 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
   var R={hitokoto:document.getElementById('rHitokoto'),weather:document.getElementById('rWeather'),fx:document.getElementById('rFx')};
   function draw(el,html){el.classList.remove('err');el.innerHTML=html}
   function fail(el,msg){el.classList.add('err');el.textContent=msg}
+  function tmo(){var c=new AbortController();setTimeout(function(){c.abort()},5000);return c.signal}
+  function jget(u){return fetch(u,{signal:tmo()}).then(function(r){if(!r.ok)throw 0;return r.json()})}
   var F={
     hitokoto:function(el){
-      fetch('https://v1.hitokoto.cn/?c=a&c=b&c=k').then(function(r){if(!r.ok)throw 0;return r.json()})
-        .catch(function(){return fetch('https://international.v1.hitokoto.cn/?c=a&c=b&c=k').then(function(r){if(!r.ok)throw 0;return r.json()})})
+      jget('https://v1.hitokoto.cn/?c=a&c=b&c=k')
+        .catch(function(){return jget('https://international.v1.hitokoto.cn/?c=a&c=b&c=k')})
         .then(function(d){draw(el,'「<em>'+d.hitokoto+'</em>」<br>—— '+(d.from||d.from_who||'佚名'))})
         .catch(function(){var L=[['生活嘛，就是起起落落落落落。','本地句库 · 接口离线'],['今天的你，也是限量版。','本地句库 · 接口离线'],['慢慢来，比较快。','本地句库 · 接口离线'],['风穿过画面时，所有层以不同延迟追随。','NEBULA A · 阻尼版'],['头发自己找到回家的路。','NEBULA B · 木偶版']];
           var k=L[Math.floor(Math.random()*L.length)];
           draw(el,'「<em>'+k[0]+'</em>」<br>—— '+k[1])});
     },
     weather:function(el){
-      fetch('https://api.open-meteo.com/v1/forecast?latitude=27.99&longitude=120.70&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FShanghai')
-        .then(function(r){return r.json()})
+      jget('https://api.open-meteo.com/v1/forecast?latitude=27.99&longitude=120.70&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FShanghai')
         .then(function(d){var c=d.current||{};
           draw(el,'温州现在 <em>'+c.temperature_2m+'°C</em> · 湿度 '+c.relative_humidity_2m+'% · 风 '+(c.wind_speed_10m||0).toFixed(1)+' km/h<br><span style="opacity:.6">'+(new Date(c.time).toLocaleString('zh-CN'))+'</span>')})
         .catch(function(){fail(el,'天气接口没打通，稍后再抽。')});
     },
     fx:function(el){
-      fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()})
+      jget('https://open.er-api.com/v6/latest/USD')
         .then(function(d){var cny=d.rates&&d.rates.CNY;
           if(!cny)throw 0;
           draw(el,'1 USD = <em>'+cny.toFixed(4)+' CNY</em><br><span style="opacity:.6">更新时间 '+d.time_last_update_utc+'</span>')})
