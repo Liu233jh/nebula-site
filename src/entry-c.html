@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEBULA C · 工具舱</title>
+<meta name="description" content="NEBULA C 版——浏览器端工具舱：OCR 识别、公开 API 盒子、3D 玩具。">
+<style>
+:root{--ink:#050d1f;--blue:#0a66ff;--sky:#4da3ff;--hair:rgba(5,13,31,.10);--bg:#f4f8fc;--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--mono);min-height:100vh;padding:96px 24px 80px}
+::selection{background:rgba(10,102,255,.2)}
+.backbtn{position:fixed;top:20px;left:22px;z-index:78;
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.3em;padding:9px 18px 9px 15px;
+  background:rgba(255,255,255,.34);border:1px solid rgba(5,13,31,.10);color:var(--ink);
+  backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
+  box-shadow:0 2px 12px rgba(5,13,31,.05);cursor:pointer;text-decoration:none;display:inline-block;
+  transition:border-color .25s,color .25s,box-shadow .25s,background .25s}
+.backbtn:hover{border-color:var(--sky);color:var(--sky);background:rgba(255,255,255,.72);box-shadow:0 6px 20px rgba(10,102,255,.14)}
+.wrap{max-width:1060px;margin:0 auto}
+mark{display:inline-block;background:var(--ink);color:#fff;font-size:11px;letter-spacing:.34em;padding:8px 16px 7px;margin-bottom:22px}
+h1{font-size:clamp(30px,5vw,46px);letter-spacing:.04em;line-height:1.2}
+h1 i{font-style:normal;color:var(--blue)}
+.lead{margin-top:14px;font-size:13px;line-height:2;color:rgba(5,13,31,.62);max-width:640px}
+/* 模块外壳 */
+.mod{margin-top:64px;border:1px solid var(--hair);background:#fff;box-shadow:8px 8px 0 rgba(5,13,31,.06)}
+.mod-h{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--hair)}
+.mod-h .no{font-size:12px;letter-spacing:.3em;color:var(--blue);font-weight:700}
+.mod-h h2{font-size:17px;letter-spacing:.1em}
+.mod-h .en{font-size:10px;letter-spacing:.28em;color:rgba(5,13,31,.4);margin-left:auto}
+.mod-b{padding:26px 24px}
+.mod-note{margin-top:12px;font-size:11px;line-height:1.9;color:rgba(5,13,31,.45)}
+.btn{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.24em;
+  padding:10px 18px;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;
+  transition:background .25s,border-color .25s,color .25s,transform .2s}
+.btn:hover{background:var(--blue);border-color:var(--blue);transform:translateY(-2px)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:rgba(10,102,255,.08);color:var(--blue);border-color:var(--blue)}
+/* OCR */
+.ocr-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.ocr-grid{grid-template-columns:1fr}}
+.drop{border:1.5px dashed rgba(5,13,31,.28);background:rgba(10,102,255,.03);min-height:250px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;
+  transition:border-color .25s,background .25s;text-align:center;padding:18px}
+.drop:hover,.drop.over{border-color:var(--blue);background:rgba(10,102,255,.07)}
+.drop .di{font-size:26px;letter-spacing:.2em;color:var(--blue)}
+.drop p{font-size:12px;line-height:1.9;color:rgba(5,13,31,.55)}
+.ocr-out{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ocr-out textarea{flex:1;min-height:250px;resize:vertical;border:1px solid var(--hair);background:rgba(5,13,31,.02);
+  font-family:var(--mono);font-size:12.5px;line-height:1.9;padding:14px;color:var(--ink);outline:none}
+.ocr-out textarea:focus{border-color:var(--sky)}
+.ocr-bar{height:5px;background:rgba(5,13,31,.08);overflow:hidden;border-radius:99px}
+.ocr-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--sky));transition:width .3s}
+.ocr-status{font-size:11px;letter-spacing:.1em;color:rgba(5,13,31,.5);min-height:16px}
+.ocr-img{max-width:100%;max-height:220px;display:block;margin:0 auto;border:1px solid var(--hair)}
+.ocr-acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* API 盒子 */
+.api-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.api{border:1px solid var(--hair);background:rgba(10,102,255,.03);padding:18px;display:flex;flex-direction:column;gap:12px;min-height:170px}
+.api h3{font-size:12px;letter-spacing:.22em;color:var(--blue)}
+.api .src{font-size:10px;letter-spacing:.12em;color:rgba(5,13,31,.38)}
+.api .res{flex:1;font-size:12.5px;line-height:1.95;color:rgba(5,13,31,.78);min-height:52px}
+.api .res em{font-style:normal;color:var(--blue);font-weight:700}
+.api .err{color:#c0392b;font-size:11px}
+/* 3D */
+.scene{position:relative;height:420px;background:linear-gradient(160deg,#050d1f,#0a1b3e 70%,#0d2450);overflow:hidden;border:1px solid var(--hair)}
+.scene canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+.scene canvas:active{cursor:grabbing}
+.scene .tip{position:absolute;left:16px;bottom:14px;font-size:10px;letter-spacing:.26em;color:rgba(255,255,255,.55);pointer-events:none}
+.scene .ld{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:11px;letter-spacing:.3em}
+footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,.4);text-align:center;line-height:2}
+@media(prefers-reduced-motion:reduce){.btn:hover{transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="backbtn" href="../">← 返回</a>
+<div class="wrap">
+<mark>NEBULA · C 版 · 工具舱</mark>
+<h1>大杂烩 <i>实验场</i></h1>
+<p class="lead">三个纯浏览器端的玩具：OCR 拖图识字、公开 API 盒子、可拖拽的低多边形行星。全部懒加载，不用不下载，失败自动降级提示。</p>
+
+<!-- 01 OCR -->
+<section class="mod" id="m-ocr">
+  <div class="mod-h"><span class="no">01</span><h2>OCR 实验舱</h2><span class="en">TESSERACT.JS · IN-BROWSER</span></div>
+  <div class="mod-b">
+    <div class="ocr-grid">
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="上传或粘贴图片">
+        <span class="di">⛶</span>
+        <p>拖图片进来 / 点击选择 / 直接 Ctrl+V 粘贴截图<br>支持中英文 · 图片不会离开你的浏览器</p>
+        <img class="ocr-img" id="ocrImg" alt="" hidden>
+      </div>
+      <div class="ocr-out">
+        <div class="ocr-bar"><i id="ocrBar"></i></div>
+        <p class="ocr-status" id="ocrStatus">待命——首次识别需下载识别引擎与语言包（约 15MB），之后走缓存。</p>
+        <textarea id="ocrText" placeholder="识别结果会出现在这里……" spellcheck="false"></textarea>
+        <div class="ocr-acts">
+          <button class="btn" id="ocrCopy" disabled>复制文本</button>
+          <button class="btn ghost" id="ocrClear">清空</button>
+        </div>
+      </div>
+    </div>
+    <p class="mod-note">识别引擎 tesseract.js 由 jsdelivr CDN 懒加载；CDN 不可达时提示降级。图片纯本地处理，无上传。</p>
+  </div>
+</section>
+
+<!-- 02 API -->
+<section class="mod" id="m-api">
+  <div class="mod-h"><span class="no">02</span><h2>公开 API 盒子</h2><span class="en">FETCH · TODAY-BLIND-BOX MODE</span></div>
+  <div class="mod-b">
+    <div class="api-grid">
+      <div class="api">
+        <h3>一言 · HITOKOTO</h3>
+        <span class="src">v1.hitokoto.cn</span>
+        <p class="res" id="rHitokoto">——</p>
+        <button class="btn ghost" data-api="hitokoto">抽一发</button>
+      </div>
+      <div class="api">
+        <h3>温州实况天气</h3>
+        <span class="src">open-meteo.com · 免 Key</span>
+        <p class="res" id="rWeather">——</p>
+        <button class="btn ghost" data-api="weather">抽一发</button>
+      </div>
+      <div class="api">
+        <h3>实时汇率 · USD→CNY</h3>
+        <span class="src">open.er-api.com · 免 Key</span>
+        <p class="res" id="rFx">——</p>
+        <button class="btn ghost" data-api="fx">抽一发</button>
+      </div>
+    </div>
+    <p class="mod-note">三个接口全部官方开放且支持跨域（CORS），无需任何密钥；请求失败显示红色提示，不影响其他卡片。</p>
+  </div>
+</section>
+
+<!-- 03 3D -->
+<section class="mod" id="m-3d">
+  <div class="mod-h"><span class="no">03</span><h2>3D 玩具 · 低多边形行星</h2><span class="en">THREE.JS · LAZY</span></div>
+  <div class="mod-b" style="padding:0">
+    <div class="scene" id="scene">
+      <p class="ld" id="sceneLd">滚到这里才加载 three.js …</p>
+      <span class="tip">拖拽旋转 · 滚轮缩放</span>
+    </div>
+  </div>
+  <div style="padding:16px 24px 20px"><p class="mod-note" style="margin-top:0">three.js 懒加载 + WebGL 检测降级；素材接入口径与二期「据点页行星轨道」一致（polyfork.dev 素材库待接入）。</p></div>
+</section>
+
+<footer>NEBULA C · 大杂烩实验场 · 纯前端 · 无后端 · 虚构演示非真实服务</footer>
+</div>
+<script>
+/* ---- 01 OCR：tesseract.js 懒加载 ---- */
+(function(){
+  var drop=document.getElementById('drop'),img=document.getElementById('ocrImg'),
+      bar=document.getElementById('ocrBar'),st=document.getElementById('ocrStatus'),
+      out=document.getElementById('ocrText'),cp=document.getElementById('ocrCopy'),
+      cl=document.getElementById('ocrClear'),worker=null,loading=false,langUrl=null;
+  function setBar(p){bar.style.width=Math.round(p*100)+'%'}
+  function setStatus(s){st.textContent=s}
+  function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('script'))};document.head.appendChild(s)})}
+  function getWorker(){
+    if(worker)return Promise.resolve(worker);
+    if(loading)return null;
+    loading=true;
+    setStatus('正在下载识别引擎（tesseract.js）……');
+    return loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js')
+      .then(function(){
+        if(!window.Tesseract)throw new Error('no-tesseract');
+        setStatus('正在下载中英语言包（约 15MB，仅首次）……');
+        return Tesseract.createWorker('chi_sim+eng',1,{logger:function(m){
+          if(m.status==='recognizing text'){setStatus('识别中……');setBar(.5+m.progress*.5)}
+          else{setBar(m.progress!==undefined?m.progress*.5:0);
+            var el=document.getElementById('ocrBar');var t0=el._t0||(el._t0=Date.now());
+            setStatus('下载语言包中……已进行 '+Math.round((Date.now()-el._t0)/1000)+'s（约 15MB，通常 1–3 分钟，之后走浏览器缓存）')}
+        }});
+      })
+      .then(function(w){worker=w;loading=false;return w})
+      .catch(function(e){loading=false;throw e});
+  }
+  function recognize(file){
+    if(!file||!/^image\//.test(file.type)){setStatus('请给一张图片（png / jpg / webp）');return}
+    var url=URL.createObjectURL(file);
+    img.hidden=false;img.src=url;
+    setBar(0);setStatus('图片就绪，准备引擎……');
+    getWorker().then(function(w){return w.recognize(file)})
+      .then(function(r){
+        var t=(r.data.text||'').trim();
+        out.value=t||'（没认出文字——试试更清晰的截图）';
+        cp.disabled=!t;setBar(1);setStatus('完成。字都在上面了。');
+      })
+      .catch(function(){
+        setBar(0);setStatus('引擎加载失败（CDN 不可达或网络受限）。图片已在左侧，稍后再试。');
+      });
+  }
+  drop.addEventListener('click',function(){var i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=function(){recognize(i.files[0])};i.click()});
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('over')});
+  drop.addEventListener('dragleave',function(){drop.classList.remove('over')});
+  drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('over');recognize(e.dataTransfer.files[0])});
+  document.addEventListener('paste',function(e){
+    var items=(e.clipboardData||{}).items||[];
+    for(var i=0;i<items.length;i++)if(/^image\//.test(items[i].type)){recognize(items[i].getAsFile());break}
+  });
+  cp.addEventListener('click',function(){out.select();try{document.execCommand('copy')}catch(e){navigator.clipboard&&navigator.clipboard.writeText(out.value)}cp.textContent='已复制';setTimeout(function(){cp.textContent='复制文本'},1600)});
+  cl.addEventListener('click',function(){out.value='';img.hidden=true;img.removeAttribute('src');setBar(0);setStatus('待命。');cp.disabled=true});
+})();
+/* ---- 02 API 盒子 ---- */
+(function(){
+  var R={hitokoto:document.getElementById('rHitokoto'),weather:document.getElementById('rWeather'),fx:document.getElementById('rFx')};
+  function draw(el,html){el.classList.remove('err');el.innerHTML=html}
+  function fail(el,msg){el.classList.add('err');el.textContent=msg}
+  var F={
+    hitokoto:function(el){
+      fetch('https://v1.hitokoto.cn/?c=a&c=b&c=k').then(function(r){if(!r.ok)throw 0;return r.json()})
+        .catch(function(){return fetch('https://international.v1.hitokoto.cn/?c=a&c=b&c=k').then(function(r){if(!r.ok)throw 0;return r.json()})})
+        .then(function(d){draw(el,'「<em>'+d.hitokoto+'</em>」<br>—— '+(d.from||d.from_who||'佚名'))})
+        .catch(function(){var L=[['生活嘛，就是起起落落落落落。','本地句库 · 接口离线'],['今天的你，也是限量版。','本地句库 · 接口离线'],['慢慢来，比较快。','本地句库 · 接口离线'],['风穿过画面时，所有层以不同延迟追随。','NEBULA A · 阻尼版'],['头发自己找到回家的路。','NEBULA B · 木偶版']];
+          var k=L[Math.floor(Math.random()*L.length)];
+          draw(el,'「<em>'+k[0]+'</em>」<br>—— '+k[1])});
+    },
+    weather:function(el){
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=27.99&longitude=120.70&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FShanghai')
+        .then(function(r){return r.json()})
+        .then(function(d){var c=d.current||{};
+          draw(el,'温州现在 <em>'+c.temperature_2m+'°C</em> · 湿度 '+c.relative_humidity_2m+'% · 风 '+(c.wind_speed_10m||0).toFixed(1)+' km/h<br><span style="opacity:.6">'+(new Date(c.time).toLocaleString('zh-CN'))+'</span>')})
+        .catch(function(){fail(el,'天气接口没打通，稍后再抽。')});
+    },
+    fx:function(el){
+      fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()})
+        .then(function(d){var cny=d.rates&&d.rates.CNY;
+          if(!cny)throw 0;
+          draw(el,'1 USD = <em>'+cny.toFixed(4)+' CNY</em><br><span style="opacity:.6">更新时间 '+d.time_last_update_utc+'</span>')})
+        .catch(function(){fail(el,'汇率接口没打通，稍后再抽。')});
+    }
+  };
+  document.querySelectorAll('[data-api]').forEach(function(b){
+    b.addEventListener('click',function(){F[b.dataset.api](R[b.dataset.api])});
+  });
+})();
+/* ---- 03 3D：three.js 懒加载 + 拖拽行星 ---- */
+(function(){
+  try{
+    var scene=document.getElementById('scene'),ld=document.getElementById('sceneLd');
+    var started=false;
+    if(!scene)return;
+    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches){/*仍可加载，只是不自转*/}
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting&&!started){started=true;io.disconnect();boot()}
+      });
+    },{threshold:.2});
+    io.observe(scene);
+    function boot(){
+      var s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+      s.async=true;
+      s.onerror=function(){ld.textContent='three.js 加载失败——这块留白也是诚实。'};
+      s.onload=function(){try{init()}catch(e){ld.textContent='3D 初始化失败，其余模块不受影响。'}};
+      document.head.appendChild(s);
+    }
+    function init(){
+      if(!window.THREE)return;
+      var cvs=document.createElement('canvas');
+      scene.insertBefore(cvs,scene.firstChild);
+      var renderer;
+      try{renderer=new THREE.WebGLRenderer({canvas:cvs,alpha:true,antialias:true})}
+      catch(e){ld.textContent='这台设备不支持 WebGL——2D 页面照样能玩。';return}
+      renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+      function size(){renderer.setSize(scene.clientWidth,scene.clientHeight,false)}
+      size();addEventListener('resize',size);
+      var sc=new THREE.Scene();
+      var cam=new THREE.PerspectiveCamera(45,scene.clientWidth/scene.clientHeight,.1,100);
+      cam.position.set(0,1.6,6.4);cam.lookAt(0,0,0);
+      sc.add(new THREE.AmbientLight('#33507a',.9));
+      var sun=new THREE.DirectionalLight('#cfe4ff',1.5);sun.position.set(4,5,6);sc.add(sun);
+      var rim=new THREE.DirectionalLight('#4da3ff',.5);rim.position.set(-5,-2,-4);sc.add(rim);
+      // 低多边形行星：顶点噪声扰动
+      var g=new THREE.IcosahedronGeometry(1.7,1);
+      var pos=g.attributes.position;
+      for(var i=0;i<pos.count;i++){
+        var f=1+(Math.random()-.5)*.22;
+        pos.setXYZ(i,pos.getX(i)*f,pos.getY(i)*f,pos.getZ(i)*f);
+      }
+      g.computeVertexNormals();
+      var planet=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:'#4da3ff',flatShading:true,roughness:.55,metalness:.15}));
+      sc.add(planet);
+      var land=new THREE.Mesh(new THREE.IcosahedronGeometry(1.72,1),new THREE.MeshStandardMaterial({color:'#0a1b3e',flatShading:true,roughness:.9}));
+      land.visible=false;
+      // 行星环
+      var ring=new THREE.Mesh(new THREE.TorusGeometry(2.9,.10,8,48),new THREE.MeshStandardMaterial({color:'#cfe4ff',flatShading:true,roughness:.8,transparent:true,opacity:.55}));
+      ring.rotation.x=1.25;sc.add(ring);
+      // 两颗卫星
+      var m1=new THREE.Mesh(new THREE.IcosahedronGeometry(.22,0),new THREE.MeshStandardMaterial({color:'#f4f8fc',flatShading:true}));
+      var m2=new THREE.Mesh(new THREE.IcosahedronGeometry(.15,0),new THREE.MeshStandardMaterial({color:'#8fbcff',flatShading:true}));
+      sc.add(m1);sc.add(m2);
+      // 星尘
+      var N=260,sp=new Float32Array(N*3);
+      for(var i=0;i<N;i++){var th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=7+Math.random()*6;
+        sp[i*3]=r*Math.sin(ph)*Math.cos(th);sp[i*3+1]=r*Math.cos(ph)*.6;sp[i*3+2]=r*Math.sin(ph)*Math.sin(th)}
+      var sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+      sc.add(new THREE.Points(sg,new THREE.PointsMaterial({color:'#cfe4ff',size:.045,transparent:true,opacity:.7})));
+      // 拖拽旋转 + 惯性
+      var vx=0,vy=0,drag=false,lx=0,ly=0,zoom=6.4;
+      cvs.addEventListener('pointerdown',function(e){drag=true;lx=e.clientX;ly=e.clientY;cvs.setPointerCapture(e.pointerId)});
+      cvs.addEventListener('pointermove',function(e){if(!drag)return;vx=(e.clientX-lx)*.006;vy=(e.clientY-ly)*.006;planet.rotation.y+=vx;planet.rotation.x+=vy;ring.rotation.z+=vx;lx=e.clientX;ly=e.clientY});
+      cvs.addEventListener('pointerup',function(){drag=false});
+      cvs.addEventListener('wheel',function(e){e.preventDefault();zoom=Math.min(11,Math.max(3.5,zoom+e.deltaY*.004))},{passive:false});
+      var reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      var run=true;document.addEventListener('visibilitychange',function(){run=!document.hidden});
+      var last=0;
+      (function loop(ts){
+        if(!run){requestAnimationFrame(loop);return}
+        ts=ts||0;if(ts-last<16){requestAnimationFrame(loop);return}
+        last=ts;
+        if(!drag){
+          planet.rotation.y+=.0032+vx;planet.rotation.x+=vy*.6;
+          ring.rotation.z+=.0016;
+          vx*=.95;vy*=.95;
+        }
+        m1.position.set(Math.cos(ts*.00042)*3.6,Math.sin(ts*.00042)*.5,Math.sin(ts*.00042)*3.6);
+        m2.position.set(Math.cos(-ts*.00065+2)*4.3,Math.sin(-ts*.00065+2)*.9,Math.sin(-ts*.00065+2)*4.3);
+        cam.position.z+=(zoom-cam.position.z)*.08;
+        renderer.render(sc,cam);
+        requestAnimationFrame(loop);
+      })();
+      var tip=scene.querySelector('.ld');if(tip)tip.remove();
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

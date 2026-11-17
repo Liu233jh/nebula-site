@@ -17,7 +17,7 @@ mark{background:none;color:#4DA3FF;font-size:12px;letter-spacing:.42em;opacity:0
 h1{font-size:clamp(28px,5.4vw,50px);margin:0;font-weight:800;letter-spacing:.02em;text-align:center}
 h1 span{display:inline-block;opacity:0;transform:translateY(14px);animation:drop .6s cubic-bezier(.22,1,.36,1) forwards}
 h1 i{font-style:normal;color:#4DA3FF}
-.vs{display:grid;grid-template-columns:repeat(2,minmax(260px,400px));gap:22px;width:100%;justify-content:center}
+.vs{display:grid;grid-template-columns:repeat(3,minmax(240px,360px));gap:22px;width:100%;justify-content:center}
 .card{position:relative;display:block;padding:26px 28px 22px;border:1px solid rgba(255,255,255,.22);color:#fff;text-decoration:none;
   background:rgba(255,255,255,.045);backdrop-filter:blur(6px);overflow:hidden;
   transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .3s,box-shadow .35s}
@@ -54,8 +54,8 @@ body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!i
 <body>
 <canvas id="sky"></canvas>
 <div class="wrap">
-<mark>NEBULA · 双版本</mark>
-<h1 id="tt">选一个 <i>人物动效</i></h1>
+<mark>NEBULA · 三版本</mark>
+<h1 id="tt">选一个 <i>版本</i></h1>
 <div class="vs">
   <a class="card" href="./a/">
     <span class="cno"><b>01</b> / VERSION A</span>
@@ -73,8 +73,16 @@ body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!i
     <div class="ctags"><span>五弹簧</span><span>分层摆动</span><span>风吹发梢</span></div>
     <span class="cgo">进入 B 版</span>
   </a>
+  <a class="card" href="./c/">
+    <span class="cno"><b>03</b> / VERSION C</span>
+    <h2>C · 工具舱</h2>
+    <span class="en">TOY LAB</span>
+    <p class="cdesc">大杂烩实验场——浏览器端 OCR 识字、公开 API 盒子、可拖拽的低多边形行星，全部懒加载。</p>
+    <div class="ctags"><span>网页 OCR</span><span>API 盒子</span><span>3D 玩具</span></div>
+    <span class="cgo">进入 C 版</span>
+  </a>
 </div>
-<p>两版内容一致，仅人物动效不同 · 虚构演示，非真实服务</p>
+<p>A / B 内容一致仅人物动效不同 · C 为纯前端工具舱 · 虚构演示，非真实服务</p>
 </div>
 <script>
 (function(){
@@ -241,8 +249,8 @@ body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!i
     push(document.querySelector('mark'),'bar',0);
     push(document.getElementById('tt'),'title',1);
     var cards=document.querySelectorAll('.card');
-    push(cards[0],'card',2);push(cards[1],'card',3);
-    push(document.querySelector('.wrap>p'),'foot',4);
+    push(cards[0],'card',2);push(cards[1],'card',3);push(cards[2],'card',4);
+    push(document.querySelector('.wrap>p'),'foot',5);
     for(var ci=0;ci<cards.length;ci++){
       var inner=cards[ci].querySelectorAll('.cno,h2,.cdesc,.ctags,.cgo');
       for(var k=0;k<inner.length;k++)push(inner[k],'chip',5+ci);
