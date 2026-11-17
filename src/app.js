@@ -67,6 +67,14 @@ function routeFromHash(){
   return null;
 }
 /* ---- 据点页：单光标搬运行星卡片（克制版 swarm） ---- */
+/* 截图 CDN 抖动兜底：GitHub Pages 偶发加载失败时自动重试一次 */
+document.addEventListener('error',function(e){
+  var el=e.target;
+  if(el&&el.tagName==='IMG'&&el.src.indexOf('/shots/')>-1&&!el.dataset.retry){
+    el.dataset.retry='1';
+    setTimeout(function(){el.src=el.src.split('?')[0]+'?r='+Date.now()},400);
+  }
+},true);
 function outpostSwarm(){
   try{
     if(!matchMedia('(pointer:fine)').matches)return;
