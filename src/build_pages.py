@@ -78,12 +78,13 @@ figB = ('<div class="pup" aria-hidden="true"><div class="pbody">'
         f'<img class="eclosed" src="{u("eclosed")}" alt="">'
         f'<div class="pbangs"><img src="{u("bangs")}" alt=""></div>'
         f'<img class="pleft" src="{u("pleft")}" alt="">'
-        f'<div class="rtop"><img src="{u("rtop")}" alt="">'
-        f'<img class="rbot" src="{ART_LOCAL}/rbot.png" alt=""></div>'
+        f'<img class="plow" src="{ART_LOCAL}/plow.png" alt="">'
+        f'<div class="rtop"><img src="{u("rtop")}" alt=""></div>'
+        f'<img class="rbot" src="{ART_LOCAL}/rbot.png" alt="">'
         '</div></div>')
 
 os.makedirs(OUT + 'art', exist_ok=True)
-for f in ('pbase.png', 'rbot.png'):
+for f in ('pbase.png', 'rbot.png', 'plow.png'):
     open(OUT + 'art/' + f, 'wb').write(open(SRC + 'art/' + f, 'rb').read())
 print('art assets copied')
 

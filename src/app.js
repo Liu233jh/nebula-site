@@ -216,9 +216,9 @@ if(fine&&!reduced){
 /* ---------- 木偶：弹簧驱动发束 ---------- */
 (function(){
   var pup=$('.pup');if(!pup||reduced)return;
-  var L=$('.pleft',pup),R=$('.rtop',pup),R2=$('.rbot',pup),B=$('.pbody',pup),F=$('.pbangs',pup);
+  var L=$('.pleft',pup),R=$('.rtop',pup),R2=$('.rbot',pup),B=$('.pbody',pup),F=$('.pbangs',pup),PL=$('.plow',pup);
   if(!L||!R||!B)return;
-  var sL={x:0,v:0},sR={x:0,v:0},sR2={x:0,v:0},sH={x:0,v:0},sF={x:0,v:0};
+  var sL={x:0,v:0},sR={x:0,v:0},sR2={x:0,v:0},sH={x:0,v:0},sF={x:0,v:0},sPL={x:0,v:0};
   var mv=0,lastX=null;
   if(fine)window.addEventListener('mousemove',function(e){
     if(lastX!==null)mv+=(e.clientX-lastX)*0.018;
@@ -237,12 +237,17 @@ if(fine&&!reduced){
     var aL=spring(sL,windL+mv*2.2,26,5.2,dt);
     var aR=spring(sR,windR-mv*1.8,22,7.5,dt);
     L.style.transform='rotate('+Math.max(-9,Math.min(9,aL)).toFixed(3)+'deg)';
-    R.style.transform='rotate('+Math.max(-9,Math.min(9,aR)).toFixed(3)+'deg)';
+    R.style.transform='rotate('+Math.max(-5.5,Math.min(5.5,aR)).toFixed(3)+'deg)';
+    if(PL){
+      var wp=Math.sin((t-0.35)*0.8+0.9)*1.1;
+      var aPL=spring(sPL,wp-aR*0.22,20,7.0,dt);
+      PL.style.transform='rotate('+Math.max(-2.4,Math.min(2.4,aPL)).toFixed(3)+'deg)';
+    }
     if(R2){
       var w2=Math.sin((t-0.42)*0.72+0.6)*1.5+Math.sin((t-0.42)*1.55)*0.6;
-      var target2=w2-aR*0.55;
+      var target2=w2*0.6-aR*0.72;
       var aR2=spring(sR2,target2,26,8.0,dt);
-      R2.style.transform='rotate('+Math.max(-4,Math.min(4,aR2)).toFixed(3)+'deg)';
+      R2.style.transform='rotate('+Math.max(-4.2,Math.min(4.2,aR2)).toFixed(3)+'deg)';
     }
     if(F){
       var wf=Math.sin((t-0.3)*0.6)*0.55+Math.sin((t-0.3)*1.4)*0.22;
