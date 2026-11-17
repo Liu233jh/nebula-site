@@ -47,6 +47,8 @@ p{color:rgba(255,255,255,.42);font-size:11px;letter-spacing:.15em;margin:6px 0 0
   mark,h1 span,p{animation:none;opacity:1;transform:none}
   .card,.card::before,.card .cgo::after,.card .ctags span{transition:none}
 }
+body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!important;opacity:1!important;transform:none!important}
+#swarm{position:fixed;inset:0;z-index:99;pointer-events:none}
 </style>
 </head>
 <body>
@@ -117,6 +119,124 @@ p{color:rgba(255,255,255,.42);font-size:11px;letter-spacing:.15em;margin:6px 0 0
     out+='<span style="animation-delay:'+d+'">'+html[i]+'</span>';step++;
   }
   h.innerHTML=out;
+})();
+/* ---- swarm rebuild intro（光标群搬运开屏） ---- */
+(function(){
+  var cv=null,raf=0,done=false;
+  function finish(){
+    if(done)return;done=true;
+    if(raf)cancelAnimationFrame(raf);
+    if(cv&&cv.parentNode)cv.parentNode.removeChild(cv);
+    cv=null;
+  }
+  try{
+    if(!matchMedia('(pointer:fine)').matches)return;
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    if(innerWidth<900)return;
+    try{var last=+localStorage.getItem('nebulaSwarm')||0;if(Date.now()-last<864e5)return}catch(e){return}
+    try{localStorage.setItem('nebulaSwarm',String(Date.now()))}catch(e){}
+    document.body.classList.add('swarm-play');
+    cv=document.createElement('canvas');cv.id='swarm';
+    document.body.appendChild(cv);
+    var ctx=cv.getContext('2d');
+    function size(){cv.width=innerWidth;cv.height=innerHeight}
+    size();
+    // 目标清单：大块（有幽灵色块）+ 细节作业点（涟漪）
+    var T=[];
+    function push(el,kind,phase){if(!el)return;var r=el.getBoundingClientRect();if(r.width<4||r.height<4)return;
+      T.push({x:r.left,y:r.top,w:r.width,h:r.height,kind:kind,phase:phase,start:0,placed:false,ring:0})}
+    push(document.querySelector('mark'),'bar',0);
+    push(document.getElementById('tt'),'title',1);
+    var cards=document.querySelectorAll('.card');
+    push(cards[0],'card',2);push(cards[1],'card',3);
+    push(document.querySelector('.wrap>p'),'foot',4);
+    for(var ci=0;ci<cards.length;ci++){
+      var inner=cards[ci].querySelectorAll('.cno,h2,.cdesc,.ctags,.cgo');
+      for(var k=0;k<inner.length;k++)push(inner[k],'chip',5+ci);
+    }
+    if(T.length<6){finish();return}
+    var grads={};
+    function ghost(t){
+      var x=t.x,y=t.y,w=t.w,h=t.h,r=Math.min(6,h/2);
+      ctx.globalAlpha=.9;
+      if(t.kind==='bar'){ctx.fillStyle='#4DA3FF';rr(x,y,w,h,3);ctx.fill()}
+      else if(t.kind==='title'){ctx.fillStyle='rgba(255,255,255,.92)';rr(x,y+h*.18,w,h*.5,4);ctx.fill()}
+      else if(t.kind==='card'){ctx.fillStyle='rgba(255,255,255,.07)';rr(x,y,w,h,2);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1;rr(x,y,w,h,2);ctx.stroke()}
+      else if(t.kind==='foot'){ctx.fillStyle='rgba(255,255,255,.4)';rr(x,y+h*.2,w,h*.55,3);ctx.fill()}
+      else{ctx.fillStyle='rgba(157,200,255,.5)';rr(x,y+h*.15,w,h*.5,3);ctx.fill()}
+    }
+    function rr(x,y,w,h,r){ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h)}
+    // 光标：每个目标一个
+    var cursors=T.map(function(t,i){
+      var edge=Math.random()*4,px,py;
+      if(edge===0){px=Math.random()*cv.width;py=-30}
+      else if(edge===1){px=cv.width+30;py=Math.random()*cv.height}
+      else if(edge===2){px=Math.random()*cv.width;py=cv.height+30}
+      else{px=-30;py=Math.random()*cv.height}
+      return {t:t,i:i,x0:px,y0:py,x:px,y:py,cx:(px+t.x+t.w/2)/2+(Math.random()-.5)*160,cy:(py+t.y+t.h/2)/2+(Math.random()-.5)*160,delay:i*0.09+Math.random()*.05,dur:.6+Math.random()*.3,p:0,placed:false,fade:1};
+    });
+    var bg=ctx.createLinearGradient(0,0,cv.width*.55,cv.height);
+    bg.addColorStop(0,'#050D1F');bg.addColorStop(1,'#0A1B3E');
+    var t0=null,maskA=1,fading=false;
+    addEventListener('resize',function(){size();if(!done){for(var i=0;i<T.length;i++){var r=T[i].el.getBoundingClientRect();T[i].x=r.left;T[i].y=r.top;T[i].w=r.width;T[i].h=r.height}}});
+    addEventListener('click',finish,true);
+    addEventListener('keydown',finish,true);
+    setTimeout(finish,4800);
+    function frame(ts){
+      if(done)return;
+      if(!t0)t0=ts;
+      var sec=(ts-t0)/1000;
+      ctx.clearRect(0,0,cv.width,cv.height);
+      // 背景（近似 body 渐变）
+      ctx.globalAlpha=maskA;ctx.fillStyle=bg;ctx.fillRect(0,0,cv.width,cv.height);
+      var allPlaced=true;
+      for(var i=0;i<cursors.length;i++){
+        var c=cursors[i],t=c.t;
+        c.p=Math.max(0,Math.min(1,(sec-c.delay)/c.dur));
+        var e=1-Math.pow(1-c.p,3); // easeOutCubic
+        var u=1-e;
+        c.x=u*u*c.x0+2*u*e*c.cx+e*e*(t.x+t.w/2);
+        c.y=u*u*c.y0+2*u*e*c.cy+e*e*(t.y+t.h/2);
+        if(c.p>=1&&!c.placed){c.placed=true;t.placed=true;t.ring=sec;}
+        if(!c.placed)allPlaced=false;
+        if(c.placed&&c.fade>0)c.fade=Math.max(0,c.fade-.06);
+      }
+      // 未放置目标的幽灵色块；已放置挖洞露出真实元素
+      for(var i=0;i<T.length;i++){
+        var t=T[i];
+        if(!t.placed){ghost(t);allPlaced=false}
+        else{ctx.save();ctx.globalAlpha=1;ctx.clearRect(t.x-2,t.y-2,t.w+4,t.h+4);ctx.restore()}
+      }
+      // 落位涟漪
+      for(var i=0;i<T.length;i++){
+        var t=T[i];
+        if(t.ring){
+          var a=(sec-t.ring)/.55;
+          if(a<1){ctx.globalAlpha=(1-a)*.7;ctx.strokeStyle='#4DA3FF';ctx.lineWidth=1.5;
+            ctx.beginPath();ctx.arc(t.x+t.w/2,t.y+t.h/2,10+a*36,0,6.283);ctx.stroke()}
+        }
+      }
+      // 光标
+      for(var i=0;i<cursors.length;i++){
+        var c=cursors[i];
+        if(c.fade<=0)continue;
+        ctx.globalAlpha=c.fade;
+        ctx.strokeStyle='rgba(120,190,255,.45)';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(c.x,c.y);
+        ctx.lineTo(c.x-(c.x-c.cx)*.12,c.y-(c.y-c.cy)*.12);ctx.stroke();
+        ctx.fillStyle='#eaf3ff';
+        ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x-9,c.y+11);ctx.lineTo(c.x-4,c.y+9);ctx.lineTo(c.x-6,c.y+14);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#4DA3FF';ctx.beginPath();ctx.arc(c.x,c.y,2,0,6.283);ctx.fill();
+      }
+      if(allPlaced&&!fading)fading=true,setTimeout(function(){fading='go'},420);
+      if(fading==='go'){
+        maskA-=.07;
+        if(maskA<=0){finish();return}
+      }
+      if(!done)raf=requestAnimationFrame(frame);
+    }
+    raf=requestAnimationFrame(frame);
+  }catch(err){finish()}
 })();
 </script>
 </body>
