@@ -105,6 +105,7 @@ h1 span{display:inline-block;opacity:0;animation:drop .55s cubic-bezier(.22,1,.3
 .msg{max-width:86%;padding:10px 14px;font-size:12.5px;line-height:1.9;white-space:pre-wrap;word-break:break-word}
 .msg.u{align-self:flex-end;background:var(--ink);color:#fff;border-radius:12px 12px 2px 12px}
 .msg.a{align-self:flex-start;background:rgba(10,102,255,.07);border:1px solid rgba(10,102,255,.14);border-radius:12px 12px 12px 2px}
+.msg .think{display:none;font-size:11px;line-height:1.7;color:rgba(90,120,170,.75);border-left:2px solid rgba(10,102,255,.25);padding-left:8px;margin-bottom:8px;white-space:pre-wrap;max-height:120px;overflow:auto}
 .chat-row{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .chat-row textarea{flex:1;min-width:220px;min-height:52px;resize:vertical;border:1px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12.5px;line-height:1.7;padding:12px;color:var(--ink);outline:none}
 .sw{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.1em;color:rgba(5,13,31,.6);cursor:pointer}
@@ -603,14 +604,16 @@ function echoPost(path,body,timeout){
   var box=document.getElementById('chatBox'),inp=document.getElementById('chatIn'),
       btn=document.getElementById('chatBtn'),sw=document.getElementById('chatWeb');
   var msgs=[];
-  function add(cls,t){var d=document.createElement('div');d.className='msg '+cls;d.textContent=t;box.appendChild(d);box.scrollTop=box.scrollHeight;return d}
+  function add(cls,t){var d=document.createElement('div');d.className='msg '+cls;if(t)d.textContent=t;box.appendChild(d);box.scrollTop=box.scrollHeight;return d}
   function send(){
     var t=inp.value.trim();
     if(!t||btn.disabled)return;
     inp.value='';btn.disabled=true;
     msgs.push({role:'user',content:t});
     add('u',t);
-    var a=add('a','…');
+    var a=add('a','');
+    var think=document.createElement('div');think.className='think';a.appendChild(think);
+    var body=document.createElement('span');a.appendChild(body);
     fetch(ECHO_API+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:msgs.slice(-16),web_search:sw.checked}),signal:AbortSignal.timeout?AbortSignal.timeout(180000):undefined})
       .then(function(r){
@@ -630,12 +633,26 @@ function echoPost(path,body,timeout){
               if(p==='[DONE]')return;
               try{
                 var j=JSON.parse(p);
+                if(j._raw){think.textContent=j._raw;continue}
                 if(j.usage&&j.usage.completion_tokens!==undefined){
                   var cost=j.usage.prompt_tokens*1/1e6+j.usage.completion_tokens*2/1e6;
                   if(cost>0){spentBy.chat+=cost;updCost('chat')}
                 }
-                var d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;
-                if(d){acc+=d;a.textContent=acc;box.scrollTop=box.scrollHeight}
+                var rd=j.choices&&j.choices[0]&&j.choices[0].delta;
+                if(rd){
+                  /* 思考过程灰字展示；正文出现后自动收起 */
+                  if(rd.reasoning_content){
+                    think.style.display='block';
+                    think.textContent+=rd.reasoning_content;
+                    think.textContent=think.textContent.slice(-600);
+                    box.scrollTop=box.scrollHeight;
+                  }
+                  var d=rd.content;
+                  if(d){
+                    acc+=d;body.textContent=acc;think.style.display='none';
+                    box.scrollTop=box.scrollHeight;
+                  }
+                }
               }catch(err){}
             });
             return step();
