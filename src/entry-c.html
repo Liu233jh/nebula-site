@@ -3,60 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEBULA C · 工具舱</title>
-<meta name="description" content="NEBULA C 版——浏览器端工具舱：OCR 识别、公开 API 盒子、3D 玩具。">
+<title>NEBULA C · 回声舱</title>
+<meta name="description" content="NEBULA C 版回声舱——声音转写与朗读、双引擎 OCR、联网搜索、AI 对话，一条流水线。">
 <style>
 :root{--ink:#050d1f;--blue:#0a66ff;--sky:#4da3ff;--hair:rgba(5,13,31,.10);--bg:#f4f8fc;--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--ink);font-family:var(--mono);min-height:100vh;padding:96px 24px 80px}
+body{background:var(--bg);color:var(--ink);font-family:var(--mono);min-height:100vh;padding:88px 24px 80px}
 ::selection{background:rgba(10,102,255,.2)}
-.backbtn{position:fixed;top:20px;left:22px;z-index:78;
-  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.3em;padding:9px 18px 9px 15px;
-  background:rgba(255,255,255,.34);border:1px solid rgba(5,13,31,.10);color:var(--ink);
-  backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
-  box-shadow:0 2px 12px rgba(5,13,31,.05);cursor:pointer;text-decoration:none;display:inline-block;
-  transition:border-color .25s,color .25s,box-shadow .25s,background .25s}
+.backbtn{position:fixed;top:20px;left:22px;z-index:78;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.3em;padding:9px 18px 9px 15px;background:rgba(255,255,255,.34);border:1px solid rgba(5,13,31,.10);color:var(--ink);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);box-shadow:0 2px 12px rgba(5,13,31,.05);cursor:pointer;text-decoration:none;display:inline-block;transition:border-color .25s,color .25s,box-shadow .25s,background .25s}
 .backbtn:hover{border-color:var(--sky);color:var(--sky);background:rgba(255,255,255,.72);box-shadow:0 6px 20px rgba(10,102,255,.14)}
-.wrap{max-width:1060px;margin:0 auto}
-mark{display:inline-block;background:var(--ink);color:#fff;font-size:11px;letter-spacing:.34em;padding:8px 16px 7px;margin-bottom:22px}
-h1{font-size:clamp(30px,5vw,46px);letter-spacing:.04em;line-height:1.2}
+.wrap{max-width:1020px;margin:0 auto}
+.mark{display:inline-block;background:var(--ink);color:#fff;font-size:11px;letter-spacing:.34em;padding:8px 16px 7px;margin-bottom:22px}
+h1{font-size:clamp(32px,5.6vw,52px);letter-spacing:.04em;line-height:1.22}
 h1 i{font-style:normal;color:var(--blue)}
-.lead{margin-top:14px;font-size:13px;line-height:2;color:rgba(5,13,31,.62);max-width:640px}
-/* 模块外壳 */
-.mod{margin-top:64px;border:1px solid var(--hair);background:#fff;box-shadow:8px 8px 0 rgba(5,13,31,.06)}
-.mod-h{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--hair)}
+h1 span{display:inline-block;opacity:0;animation:drop .55s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes drop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.lead{margin-top:14px;font-size:13px;line-height:2;color:rgba(5,13,31,.62);max-width:660px}
+.badge{position:fixed;top:20px;right:22px;z-index:78;font-family:var(--mono);font-size:11px;letter-spacing:.16em;padding:9px 16px;border:1px solid rgba(5,13,31,.10);background:rgba(255,255,255,.4);backdrop-filter:blur(18px);border-radius:99px;color:var(--ink);box-shadow:0 2px 12px rgba(5,13,31,.05)}
+.badge b{color:var(--blue)}
+.badge.warn{border-color:rgba(200,60,30,.5)}.badge.warn b{color:#c0392b}
+.badge.off{color:rgba(5,13,31,.45)}
+.pipe{margin:52px 0 4px;display:flex;align-items:center;font-size:10.5px;letter-spacing:.2em;color:rgba(5,13,31,.5)}
+.pipe b{color:var(--blue)}
+.pipe .seg{flex:1;height:1px;margin:0 10px;background:linear-gradient(90deg,var(--blue) 0 6px,transparent 6px 12px);background-size:12px 1px;animation:flow 1.2s linear infinite}
+@keyframes flow{to{background-position:12px 0}}
+.mod{margin-top:58px;border:1px solid var(--hair);background:#fff;box-shadow:8px 8px 0 rgba(5,13,31,.06)}
+.pipegap{height:34px;position:relative}
+.pipegap::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,var(--blue) 0 5px,transparent 5px 11px);background-size:1px 11px;animation:flowy .9s linear infinite}
+@keyframes flowy{to{background-position:0 11px}}
+.mod-h{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--hair);flex-wrap:wrap}
 .mod-h .no{font-size:12px;letter-spacing:.3em;color:var(--blue);font-weight:700}
 .mod-h h2{font-size:17px;letter-spacing:.1em}
 .mod-h .en{font-size:10px;letter-spacing:.28em;color:rgba(5,13,31,.4);margin-left:auto}
+.mod-h .cost{font-size:10px;letter-spacing:.1em;color:rgba(5,13,31,.4)}
 .mod-b{padding:26px 24px}
 .mod-note{margin-top:12px;font-size:11px;line-height:1.9;color:rgba(5,13,31,.45)}
-.btn{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.24em;
-  padding:10px 18px;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;
-  transition:background .25s,border-color .25s,color .25s,transform .2s}
+.btn{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.24em;padding:10px 18px;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;transition:background .25s,border-color .25s,color .25s,transform .2s}
 .btn:hover{background:var(--blue);border-color:var(--blue);transform:translateY(-2px)}
-.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn:disabled{opacity:.4;cursor:default;transform:none}
 .btn.ghost{background:transparent;color:var(--ink)}
 .btn.ghost:hover{background:rgba(10,102,255,.08);color:var(--blue);border-color:var(--blue)}
-/* OCR */
-.ocr-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-@media(max-width:760px){.ocr-grid{grid-template-columns:1fr}}
-.drop{border:1.5px dashed rgba(5,13,31,.28);background:rgba(10,102,255,.03);min-height:250px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;
-  transition:border-color .25s,background .25s;text-align:center;padding:18px}
-.drop:hover,.drop.over{border-color:var(--blue);background:rgba(10,102,255,.07)}
-.drop .di{font-size:26px;letter-spacing:.2em;color:var(--blue)}
-.drop p{font-size:12px;line-height:1.9;color:rgba(5,13,31,.55)}
-.ocr-out{display:flex;flex-direction:column;gap:12px;min-width:0}
-.ocr-out textarea{flex:1;min-height:250px;resize:vertical;border:1px solid var(--hair);background:rgba(5,13,31,.02);
-  font-family:var(--mono);font-size:12.5px;line-height:1.9;padding:14px;color:var(--ink);outline:none}
-.ocr-out textarea:focus{border-color:var(--sky)}
-.ocr-bar{height:5px;background:rgba(5,13,31,.08);overflow:hidden;border-radius:99px}
-.ocr-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--sky));transition:width .3s}
-.ocr-status{font-size:11px;letter-spacing:.1em;color:rgba(5,13,31,.5);min-height:16px}
-.ocr-img{max-width:100%;max-height:220px;display:block;margin:0 auto;border:1px solid var(--hair)}
-.ocr-acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-/* API 盒子 */
+.status{font-size:11px;letter-spacing:.08em;color:rgba(5,13,31,.5);min-height:16px}
+.err{color:#c0392b}
+.offline-note{border:1px dashed rgba(5,13,31,.25);padding:14px 16px;font-size:11.5px;line-height:2;color:rgba(5,13,31,.55);margin-bottom:18px}
+.offline-note b{color:var(--blue)}
 .api-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
 .api{border:1px solid var(--hair);background:rgba(10,102,255,.03);padding:18px;display:flex;flex-direction:column;gap:12px;min-height:170px}
 .api h3{font-size:12px;letter-spacing:.22em;color:var(--blue)}
@@ -64,36 +55,135 @@ h1 i{font-style:normal;color:var(--blue)}
 .api .res{flex:1;font-size:12.5px;line-height:1.95;color:rgba(5,13,31,.78);min-height:52px}
 .api .res em{font-style:normal;color:var(--blue);font-weight:700}
 .api .err{color:#c0392b;font-size:11px}
-/* 3D */
+.voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.voice-grid{grid-template-columns:1fr}}
+.mic{border:1px solid var(--hair);background:rgba(10,102,255,.03);padding:20px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+.mic-ring{width:96px;height:96px;border-radius:50%;border:2px solid rgba(5,13,31,.16);display:flex;align-items:center;justify-content:center;font-size:30px;position:relative;transition:border-color .3s;cursor:pointer}
+.mic.rec{border-color:#c0392b}
+.mic.rec::before,.mic.rec::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(192,57,43,.5);animation:pulse 1.6s ease-out infinite}
+.mic.rec::after{animation-delay:.8s}
+@keyframes pulse{from{transform:scale(1);opacity:.8}to{transform:scale(1.55);opacity:0}}
+.mic .t,.tts-box .t{font-size:11px;letter-spacing:.14em;color:rgba(5,13,31,.5)}
+.wave{width:100%;height:64px;background:linear-gradient(160deg,#050d1f,#0a1b3e);border:1px solid var(--hair);display:none}
+.asr-out{width:100%;min-height:110px;resize:vertical;border:1px solid var(--hair);background:rgba(5,13,31,.02);font-family:var(--mono);font-size:12.5px;line-height:1.9;padding:12px;color:var(--ink);outline:none}
+.tts-box{border:1px solid var(--hair);background:rgba(10,102,255,.03);padding:20px;display:flex;flex-direction:column;gap:12px}
+.tts-box textarea{width:100%;min-height:96px;resize:vertical;border:1px solid var(--hair);background:rgba(5,13,31,.02);font-family:var(--mono);font-size:12.5px;line-height:1.9;padding:12px;color:var(--ink);outline:none}
+.voices{display:flex;gap:8px}
+.vopt{font-size:11px;letter-spacing:.2em;padding:8px 14px;border:1px solid var(--hair);cursor:pointer;background:#fff;transition:all .2s}
+.vopt.on{border-color:var(--blue);color:var(--blue);background:rgba(10,102,255,.08)}
+.ocr-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.ocr-grid{grid-template-columns:1fr}}
+.drop{border:1.5px dashed rgba(5,13,31,.28);background:rgba(10,102,255,.03);min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:border-color .25s,background .25s;text-align:center;padding:18px;position:relative;overflow:hidden}
+.drop:hover,.drop.over{border-color:var(--blue);background:rgba(10,102,255,.07)}
+.drop .di{font-size:26px;color:var(--blue)}
+.drop p{font-size:12px;line-height:1.9;color:rgba(5,13,31,.55)}
+.drop .scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--sky),transparent);top:0;display:none}
+.drop.scanning .scan{display:block;animation:scan 1.6s ease-in-out infinite}
+@keyframes scan{from{top:0}50%{top:calc(100% - 2px)}to{top:0}}
+.ocr-out{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ocr-out textarea{flex:1;min-height:250px;resize:vertical;border:1px solid var(--hair);background:rgba(5,13,31,.02);font-family:var(--mono);font-size:12.5px;line-height:1.9;padding:14px;color:var(--ink);outline:none}
+.ocr-bar{height:5px;background:rgba(5,13,31,.08);overflow:hidden;border-radius:99px}
+.ocr-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--sky));transition:width .3s}
+.ocr-img{max-width:100%;max-height:220px;display:block;margin:0 auto;border:1px solid var(--hair)}
+.ocr-acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search-row{display:flex;gap:10px;flex-wrap:wrap}
+.search-row input{flex:1;min-width:220px;box-sizing:border-box;padding:12px 16px;border:1px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12.5px;color:var(--ink);outline:none;transition:border-color .2s}
+.search-row input:focus{border-color:var(--sky)}
+.sr-list{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.sr{border:1px solid var(--hair);padding:14px 16px;background:rgba(10,102,255,.03);opacity:0;transform:translateY(8px);animation:in .4s forwards}
+@keyframes in{to{opacity:1;transform:none}}
+.sr h4{font-size:13px;letter-spacing:.04em;line-height:1.6}
+.sr h4 a{color:var(--ink);text-decoration:none;border-bottom:1px solid rgba(10,102,255,.4)}
+.sr h4 a:hover{color:var(--blue)}
+.sr .meta{font-size:10px;letter-spacing:.1em;color:rgba(5,13,31,.42);margin:6px 0}
+.sr .snip{font-size:12px;line-height:1.9;color:rgba(5,13,31,.72)}
+.sr .acts{margin-top:8px}
+.sr-full{margin-top:10px;border-top:1px dashed var(--hair);padding-top:10px;font-size:12px;line-height:2;color:rgba(5,13,31,.75);white-space:pre-wrap;max-height:340px;overflow:auto}
+.chat-box{border:1px solid var(--hair);background:#fff;height:420px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:86%;padding:10px 14px;font-size:12.5px;line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.msg.u{align-self:flex-end;background:var(--ink);color:#fff;border-radius:12px 12px 2px 12px}
+.msg.a{align-self:flex-start;background:rgba(10,102,255,.07);border:1px solid rgba(10,102,255,.14);border-radius:12px 12px 12px 2px}
+.chat-row{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chat-row textarea{flex:1;min-width:220px;min-height:52px;resize:vertical;border:1px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12.5px;line-height:1.7;padding:12px;color:var(--ink);outline:none}
+.sw{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.1em;color:rgba(5,13,31,.6);cursor:pointer}
+.sw input{accent-color:var(--blue)}
 .scene{position:relative;height:420px;background:linear-gradient(160deg,#050d1f,#0a1b3e 70%,#0d2450);overflow:hidden;border:1px solid var(--hair)}
 .scene canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
 .scene canvas:active{cursor:grabbing}
 .scene .tip{position:absolute;left:16px;bottom:14px;font-size:10px;letter-spacing:.26em;color:rgba(255,255,255,.55);pointer-events:none}
 .scene .ld{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:11px;letter-spacing:.3em}
 footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,.4);text-align:center;line-height:2}
-@media(prefers-reduced-motion:reduce){.btn:hover{transform:none}html{scroll-behavior:auto}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}h1 span{opacity:1}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <a class="backbtn" href="../">← 返回</a>
+<div class="badge off" id="badge">回声舱 · 额度未知</div>
 <div class="wrap">
-<mark>NEBULA · C 版 · 工具舱</mark>
-<h1>大杂烩 <i>实验场</i></h1>
-<p class="lead">三个纯浏览器端的玩具：OCR 拖图识字、公开 API 盒子、可拖拽的低多边形行星。全部懒加载，不用不下载，失败自动降级提示。</p>
+<div class="mark">NEBULA · C 版 · 回声舱</div>
+<h1 id="tt"></h1>
+<p class="lead">一条流水线：喂进去一段声音、一张图、一个网址、一个问题，加工后以文字或语音还给你。额度按官方单价精确计量，累计约 10 元自动锁舱——文件与录音不落盘，用完即走。</p>
+<div class="pipe"><b>输入</b><span class="seg"></span><b>加工</b><span class="seg"></span><b>输出</b></div>
 
-<!-- 01 OCR -->
+<section class="mod" id="m-api">
+  <div class="mod-h"><span class="no">00</span><h2>免电区</h2><span class="en">FREE ZONE · 0 额度</span></div>
+  <div class="mod-b">
+    <div class="api-grid">
+      <div class="api"><h3>一言 · HITOKOTO</h3><span class="src">v1.hitokoto.cn</span><p class="res" id="rHitokoto">——</p><button class="btn ghost" data-api="hitokoto">抽一发</button></div>
+      <div class="api"><h3>温州实况天气</h3><span class="src">open-meteo + wttr.in 双线路 · 免 Key</span><p class="res" id="rWeather">——</p><button class="btn ghost" data-api="weather">抽一发</button></div>
+      <div class="api"><h3>实时汇率 · USD→CNY</h3><span class="src">open.er-api.com · 免 Key</span><p class="res" id="rFx">——</p><button class="btn ghost" data-api="fx">抽一发</button></div>
+    </div>
+    <p class="mod-note">这一区不消耗任何额度，纯公开接口免 Key 直连；请求失败自动换线路或本地兜底。</p>
+  </div>
+</section>
+
+<div class="pipegap"></div>
+<section class="mod" id="m-voice">
+  <div class="mod-h"><span class="no">01</span><h2>声音站 · 说给它，它说回来</h2><span class="en">ASR + TTS</span><span class="cost" id="costAsr"></span></div>
+  <div class="mod-b">
+    <div class="offline-note" id="offVoice" hidden>回声舱后端未连接——声音站需要 Render 后端中转。部署后把地址填进页面脚本顶部 <b>ECHO_API</b> 常量即可点亮。</div>
+    <div class="voice-grid">
+      <div class="mic">
+        <div class="mic-ring" id="micRing">🎙</div>
+        <span class="t" id="micT">点击开始录音（≤120 秒）</span>
+        <div class="status" id="asrStatus">待命</div>
+        <textarea class="asr-out" id="asrOut" placeholder="你说的话会出现在这里，可编辑后再让机器朗读" spellcheck="false"></textarea>
+      </div>
+      <div class="tts-box">
+        <span class="t">朗读 · TTS（1.5 元/万字符 · 汉字×2 · 限时 5 折）</span>
+        <textarea id="ttsText" placeholder="要朗读的文字——可以直接用左边转写结果">你好，我是回声舱。你说的每一句话，我都听得见。</textarea>
+        <div class="voices"><span class="vopt on" data-v="stella">海星 · 女声</span><span class="vopt" data-v="tide">暗潮 · 男声</span></div>
+        <canvas class="wave" id="wave" width="600" height="64"></canvas>
+        <audio id="ttsAudio" controls style="width:100%" hidden></audio>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="ttsBtn">合成朗读</button>
+          <button class="btn ghost" id="asrToTts">转写 → 朗读</button>
+        </div>
+        <div class="status" id="ttsStatus">待命</div>
+      </div>
+    </div>
+    <p class="mod-note">录音在浏览器内打包成 WAV（16 位 PCM 单声道）直接转发识别，不落盘；朗读实时流式合成，播完即焚。</p>
+  </div>
+</section>
+
+<div class="pipegap"></div>
 <section class="mod" id="m-ocr">
-  <div class="mod-h"><span class="no">01</span><h2>OCR 实验舱</h2><span class="en">TESSERACT.JS · IN-BROWSER</span></div>
+  <div class="mod-h"><span class="no">02</span><h2>视觉站 · 看图识字</h2><span class="en">DUAL OCR</span><span class="cost" id="costOcr"></span></div>
   <div class="mod-b">
     <div class="ocr-grid">
       <div class="drop" id="drop" tabindex="0" role="button" aria-label="上传或粘贴图片">
+        <span class="scan"></span>
         <span class="di">⛶</span>
-        <p>拖图片进来 / 点击选择 / 直接 Ctrl+V 粘贴截图<br>自动放大增强 + 深底反色 · 图片不会离开你的浏览器</p>
+        <p>拖图片进来 / 点击选择 / 直接 Ctrl+V 粘贴截图<br>本地引擎自动放大增强 + 深底反色 · 本地识别图片不离浏览器</p>
         <img class="ocr-img" id="ocrImg" alt="" hidden>
       </div>
       <div class="ocr-out">
+        <div class="engines voices" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <span class="vopt on" id="engLocal">本地引擎 · 免费</span>
+          <span class="vopt" id="engDs">DeepSeek 高精度 · 1.5 元/千页</span>
+        </div>
         <div class="ocr-bar"><i id="ocrBar"></i></div>
-        <p class="ocr-status" id="ocrStatus">待命——首次识别需下载识别引擎与语言包（约 15MB），之后走缓存。</p>
+        <div class="status" id="ocrStatus">待命——本地引擎首次使用需下载识别模型，之后走缓存。</div>
         <textarea id="ocrText" placeholder="识别结果会出现在这里……" spellcheck="false"></textarea>
         <div class="ocr-acts">
           <button class="btn" id="ocrCopy" disabled>复制文本</button>
@@ -101,161 +191,102 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
         </div>
       </div>
     </div>
-    <p class="mod-note">识别引擎 tesseract.js 由 jsdelivr CDN 懒加载；CDN 不可达时提示降级。图片纯本地处理，无上传。</p>
+    <p class="mod-note">本地引擎（tesseract.js）适合清晰印刷体；复杂版面、手写、表格请勾「DeepSeek 高精度」，按页计费 0.0015 元，识别失败不扣。</p>
   </div>
 </section>
 
-<!-- 02 API -->
-<section class="mod" id="m-api">
-  <div class="mod-h"><span class="no">02</span><h2>公开 API 盒子</h2><span class="en">FETCH · TODAY-BLIND-BOX MODE</span></div>
+<div class="pipegap"></div>
+<section class="mod" id="m-web">
+  <div class="mod-h"><span class="no">03</span><h2>联网站 · 问一句，全网回答</h2><span class="en">SEARCH + FETCH</span><span class="cost" id="costSearch"></span></div>
   <div class="mod-b">
-    <div class="api-grid">
-      <div class="api">
-        <h3>一言 · HITOKOTO</h3>
-        <span class="src">v1.hitokoto.cn</span>
-        <p class="res" id="rHitokoto">——</p>
-        <button class="btn ghost" data-api="hitokoto">抽一发</button>
-      </div>
-      <div class="api">
-        <h3>温州实况天气</h3>
-        <span class="src">open-meteo + wttr.in 双线路 · 免 Key</span>
-        <p class="res" id="rWeather">——</p>
-        <button class="btn ghost" data-api="weather">抽一发</button>
-      </div>
-      <div class="api">
-        <h3>实时汇率 · USD→CNY</h3>
-        <span class="src">open.er-api.com · 免 Key</span>
-        <p class="res" id="rFx">——</p>
-        <button class="btn ghost" data-api="fx">抽一发</button>
-      </div>
+    <div class="offline-note" id="offWeb" hidden>同声音站：需要后端连接后使用。</div>
+    <div class="search-row">
+      <input id="searchIn" type="search" placeholder="搜点什么…… 支持 site: after: 等语法" autocomplete="off">
+      <button class="btn" id="searchBtn">搜 索</button>
     </div>
-    <p class="mod-note">三个接口全部官方开放且支持跨域（CORS），无需任何密钥；请求失败显示红色提示，不影响其他卡片。</p>
+    <div class="sr-list" id="srList"></div>
+    <p class="mod-note">搜索引擎为 DeepSeek 自研（实时索引）；结果带权威度评分。点「读全文」抓整页转 Markdown，单次 0.005 元。</p>
   </div>
 </section>
 
-<!-- 03 3D -->
+<div class="pipegap"></div>
+<section class="mod" id="m-chat">
+  <div class="mod-h"><span class="no">04</span><h2>对话站 · 和它聊聊</h2><span class="en">DEEPSEEK-FLASH · STREAM</span><span class="cost" id="costChat"></span></div>
+  <div class="mod-b">
+    <div class="offline-note" id="offChat" hidden>同声音站：需要后端连接后使用。</div>
+    <div class="chat-box" id="chatBox"><div class="msg a">我是回声舱的对话终端，跑在 deepseek-flash 上。问吧——勾上「联网」我还能边搜边答。</div></div>
+    <div class="chat-row">
+      <textarea id="chatIn" placeholder="输入消息，Enter 发送 / Shift+Enter 换行"></textarea>
+      <label class="sw"><input type="checkbox" id="chatWeb">联网</label>
+      <button class="btn" id="chatBtn">发 送</button>
+    </div>
+    <p class="mod-note">模型 1 元/百万输入 + 2 元/百万输出 tokens，单次回答最多 2000 tokens；对话记忆保留最近 8 轮。</p>
+  </div>
+</section>
+
+<div class="pipegap"></div>
 <section class="mod" id="m-3d">
-  <div class="mod-h"><span class="no">03</span><h2>3D 玩具 · 低多边形行星</h2><span class="en">THREE.JS · LAZY</span></div>
+  <div class="mod-h"><span class="no">05</span><h2>装饰站 · 低多边形行星</h2><span class="en">THREE.JS · LAZY · 0 额度</span></div>
   <div class="mod-b" style="padding:0">
     <div class="scene" id="scene">
       <p class="ld" id="sceneLd">滚到这里才加载 three.js …</p>
       <span class="tip">拖拽旋转 · 滚轮缩放</span>
     </div>
   </div>
-  <div style="padding:16px 24px 20px"><p class="mod-note" style="margin-top:0">three.js 懒加载 + WebGL 检测降级；素材接入口径与二期「据点页行星轨道」一致（polyfork.dev 素材库待接入）。</p></div>
 </section>
 
-<footer>NEBULA C · 大杂烩实验场 · 纯前端 · 无后端 · 虚构演示非真实服务</footer>
+<footer>NEBULA C · 回声舱 · 纯静态 + Render 薄后端 · DeepSeek API 驱动 · 精确计量 + 约 10 元硬顶</footer>
 </div>
 <script>
-/* ---- 01 OCR：tesseract.js 懒加载 ---- */
-(function(){
-  var drop=document.getElementById('drop'),img=document.getElementById('ocrImg'),
-      bar=document.getElementById('ocrBar'),st=document.getElementById('ocrStatus'),
-      out=document.getElementById('ocrText'),cp=document.getElementById('ocrCopy'),
-      cl=document.getElementById('ocrClear'),worker=null,loading=false,langUrl=null;
-  function setBar(p){bar.style.width=Math.round(p*100)+'%'}
-  function setStatus(s){st.textContent=s}
-  function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('script'))};document.head.appendChild(s)})}
-  // 识别前增强：放大短图 + 灰度 + 深底自动反色 + 对比度拉伸（截图类识别率提升的关键）
-  function enhance(file){
-    return new Promise(function(res){
-      var url=URL.createObjectURL(file), im=new Image();
-      im.onload=function(){
-        var w=im.naturalWidth,h=im.naturalHeight,sc=1;
-        if(Math.min(w,h)<1200&&Math.max(w,h)*2<=4200)sc=2;
-        var cv=document.createElement('canvas');cv.width=w*sc;cv.height=h*sc;
-        var x=cv.getContext('2d');
-        x.imageSmoothingEnabled=sc>1;x.imageSmoothingQuality='high';
-        x.drawImage(im,0,0,cv.width,cv.height);
-        var d;try{d=x.getImageData(0,0,cv.width,cv.height)}catch(e){res(file);return}
-        var px=d.data,hist=new Array(256).fill(0),sum=0;
-        for(var i=0;i<px.length;i+=4){
-          var g=(px[i]*.299+px[i+1]*.587+px[i+2]*.114)|0;
-          px[i]=px[i+1]=px[i+2]=g;hist[g]++;sum+=g;
-        }
-        var avg=sum/(px.length/4),invert=avg<110;
-        // 2%/98% 分位线性拉伸
-        var tot=px.length/4,lo=0,hi=255,acc=0;
-        for(var v=0;v<256;v++){acc+=hist[v];if(acc>=tot*.02){lo=v;break}}
-        acc=0;
-        for(var v=255;v>=0;v--){acc+=hist[v];if(acc>=tot*.02){hi=v;break}}
-        var span=Math.max(24,hi-lo);
-        for(var i=0;i<px.length;i+=4){
-          var g2=Math.max(0,Math.min(255,((px[i]-lo)*255/span)|0));
-          if(invert)g2=255-g2;
-          px[i]=px[i+1]=px[i+2]=g2;
-        }
-        x.putImageData(d,0,0);
-        URL.revokeObjectURL(url);
-        cv.toBlob(function(b){res(b||file)},'image/png');
-      };
-      im.onerror=function(){res(file)};
-      im.src=url;
-    });
-  }
-  function getWorker(){
-    if(worker)return Promise.resolve(worker);
-    if(loading)return null;
-    loading=true;
-    setStatus('正在下载识别引擎（tesseract.js）……');
-    return loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js')
-      .then(function(){
-        if(!window.Tesseract)throw new Error('no-tesseract');
-        setStatus('正在下载中英语言包（约 15MB，仅首次）……');
-        setStatus('正在下载高精度语言包（best 模型约 25MB，仅首次）……');
-        return Tesseract.createWorker('chi_sim+eng',1,{langPath:'https://tessdata.projectnaptha.com/4.0.0_best',logger:function(m){
-          if(m.status==='recognizing text'){setStatus('识别中……');setBar(.5+m.progress*.5)}
-          else{setBar(m.progress!==undefined?m.progress*.5:0);
-            var el=document.getElementById('ocrBar');var t0=el._t0||(el._t0=Date.now());
-            setStatus('下载语言包中……已进行 '+Math.round((Date.now()-el._t0)/1000)+'s（约 25MB，通常 1–3 分钟，之后走浏览器缓存）')}
-        }});
-      })
-      .then(function(w){worker=w;loading=false;return w})
-      .catch(function(e){loading=false;throw e});
-  }
-  function recognize(file){
-    if(!file||!/^image\//.test(file.type)){setStatus('请给一张图片（png / jpg / webp）');return}
-    var url=URL.createObjectURL(file);
-    img.hidden=false;img.src=url;
-    setBar(0);setStatus('图片就绪，自动增强中（放大/灰度/反色）……');
-    enhance(file).then(function(b){return getWorker().then(function(w){return w.recognize(b)})})
-      .then(function(r){
-        var t=(r.data.text||'').trim();
-        out.value=t||'（没认出文字——试试更清晰的截图）';
-        cp.disabled=!t;setBar(1);setStatus('完成。字都在上面了。');
-      })
-      .catch(function(){
-        setBar(0);setStatus('引擎加载失败（CDN 不可达或网络受限）。图片已在左侧，稍后再试。');
-      });
-  }
-  drop.addEventListener('click',function(){var i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=function(){recognize(i.files[0])};i.click()});
-  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('over')});
-  drop.addEventListener('dragleave',function(){drop.classList.remove('over')});
-  drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('over');recognize(e.dataTransfer.files[0])});
-  document.addEventListener('paste',function(e){
-    var items=(e.clipboardData||{}).items||[];
-    for(var i=0;i<items.length;i++)if(/^image\//.test(items[i].type)){recognize(items[i].getAsFile());break}
-  });
-  cp.addEventListener('click',function(){out.select();try{document.execCommand('copy')}catch(e){navigator.clipboard&&navigator.clipboard.writeText(out.value)}cp.textContent='已复制';setTimeout(function(){cp.textContent='复制文本'},1600)});
-  cl.addEventListener('click',function(){out.value='';img.hidden=true;img.removeAttribute('src');setBar(0);setStatus('待命。');cp.disabled=true});
-})();
-/* ---- 02 API 盒子 ---- */
+/* ===== 配置：Render 后端部署后填地址，如 var ECHO_API='https://nebula-echo.onrender.com' ===== */
+var ECHO_API='';
+
+/* ===== 余额徽章 ===== */
+var spentBy={asr:0,tts:0,ocr:0,search:0,fetch:0,chat:0};
+function updCost(k){var el=document.getElementById('cost'+k.charAt(0).toUpperCase()+k.slice(1));if(el&&spentBy[k])el.textContent='本次会话已耗 ¥'+spentBy[k].toFixed(3)}
+function refreshBadge(){
+  var b=document.getElementById('badge');
+  if(!ECHO_API){b.className='badge off';b.innerHTML='回声舱 · 后端未连接';return}
+  fetch(ECHO_API+'/api/usage')
+    .then(function(r){return r.json()})
+    .then(function(d){
+      var remain=Math.max(0,d.limit-d.spent);
+      b.className='badge'+(remain<1.5?' warn':'');
+      b.innerHTML=d.configured?('额度余 <b>¥'+remain.toFixed(2)+'</b> / ¥'+d.limit.toFixed(1)):'后端缺 API Key · 仅免费区可用';
+      if(!d.configured){document.getElementById('offVoice').hidden=false;document.getElementById('offWeb').hidden=false;document.getElementById('offChat').hidden=false}
+      else{document.getElementById('offVoice').hidden=true;document.getElementById('offWeb').hidden=true;document.getElementById('offChat').hidden=true}
+    })
+    .catch(function(){b.className='badge off';b.innerHTML='回声舱 · 后端休眠中（首次请求约 50 秒唤醒）'});
+}
+refreshBadge();if(ECHO_API)setInterval(refreshBadge,60000);
+function echoErr(j){
+  if(!j)return '网络错误或后端唤醒中（约 50 秒），稍后再试';
+  if(j.error==='quota')return '舱内额度（约10元）已用完，AI 功能全部锁死';
+  if(j.error==='rate')return '手速太快，歇一分钟再试';
+  if(j.error==='deepseek')return '上游错误 '+j.status+'：'+(j.message||'').slice(0,120);
+  return j.message||j.error||'未知错误';
+}
+function echoPost(path,body,timeout){
+  return fetch(ECHO_API+path,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body),signal:AbortSignal.timeout?AbortSignal.timeout(timeout||90000):undefined})
+    .then(function(r){return r.json().then(function(j){j._status=r.status;return j})});
+}
+
+/* ===== 00 免电区 ===== */
 (function(){
   var R={hitokoto:document.getElementById('rHitokoto'),weather:document.getElementById('rWeather'),fx:document.getElementById('rFx')};
   function draw(el,html){el.classList.remove('err');el.innerHTML=html}
   function fail(el,msg){el.classList.add('err');el.textContent=msg}
   function tmo(ms){var c=new AbortController();setTimeout(function(){c.abort()},ms||5000);return c.signal}
   function jget(u,ms){return fetch(u,{signal:tmo(ms)}).then(function(r){if(!r.ok)throw 0;return r.json()})}
-  function jget2(u){return jget(u).catch(function(){return new Promise(function(res){setTimeout(function(){res(jget(u))},1500)})}).then(function(x){return x})}
+  function jget2(u){return jget(u).catch(function(){return new Promise(function(res){setTimeout(function(){res(jget(u))},1500)})})}
+  var ZH={113:'晴',116:'多云',119:'阴',122:'阴',143:'薄雾',176:'小雨',179:'小雪',182:'冻雨',185:'冻毛雨',200:'雷阵雨',227:'吹雪',230:'暴雪',248:'雾',260:'冻雾',263:'毛毛雨',266:'细雨',281:'冻细雨',284:'冻毛毛雨',293:'零星小雨',296:'小雨',299:'阵雨',302:'中雨',305:'大阵雨',308:'大雨',311:'冻雨',314:'强冻雨',317:'小冰雹',320:'大冰雹',323:'小阵雪',326:'阵雪',329:'中雪',332:'大雪',335:'大阵雪',338:'暴雪',350:'冰粒',353:'强阵雨',356:'强阵雨',359:'暴雨',362:'雨夹雪',365:'阵性雨夹雪',368:'小阵雪',371:'中阵雪',374:'小阵性冰雹',377:'冰粒',386:'雷阵雨',389:'强雷阵雨',392:'雷伴雪',395:'强雷伴雪'};
   var F={
     hitokoto:function(el){
-      jget('https://v1.hitokoto.cn/?c=a&c=b&c=k')
-        .catch(function(){return jget('https://international.v1.hitokoto.cn/?c=a&c=b&c=k')})
+      jget('https://v1.hitokoto.cn/?c=a&c=b&c=k').catch(function(){return jget('https://international.v1.hitokoto.cn/?c=a&c=b&c=k')})
         .then(function(d){draw(el,'「<em>'+d.hitokoto+'</em>」<br>—— '+(d.from||d.from_who||'佚名'))})
         .catch(function(){var L=[['生活嘛，就是起起落落落落落。','本地句库 · 接口离线'],['今天的你，也是限量版。','本地句库 · 接口离线'],['慢慢来，比较快。','本地句库 · 接口离线'],['风穿过画面时，所有层以不同延迟追随。','NEBULA A · 阻尼版'],['头发自己找到回家的路。','NEBULA B · 木偶版']];
-          var k=L[Math.floor(Math.random()*L.length)];
-          draw(el,'「<em>'+k[0]+'</em>」<br>—— '+k[1])});
+          var k=L[Math.floor(Math.random()*L.length)];draw(el,'「<em>'+k[0]+'</em>」<br>—— '+k[1])});
     },
     weather:function(el){
       jget('https://api.open-meteo.com/v1/forecast?latitude=27.99&longitude=120.70&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FShanghai',8000)
@@ -265,7 +296,6 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
           return jget2('https://wttr.in/Wenzhou?format=j1').then(function(d){
             var c=d.current_condition&&d.current_condition[0];
             if(!c)throw 0;
-            var ZH={113:'晴',116:'多云',119:'阴',122:'阴',143:'薄雾',176:'小雨',179:'小雪',182:'冻雨',185:'冻毛雨',200:'雷阵雨',227:'吹雪',230:'暴雪',248:'雾',260:'冻雾',263:'毛毛雨',266:'细雨',281:'冻细雨',284:'冻毛毛雨',293:'零星小雨',296:'小雨',299:'阵雨',302:'中雨',305:'大阵雨',308:'大雨',311:'冻雨',314:'强冻雨',317:'小冰雹',320:'大冰雹',323:'小阵雪',326:'阵雪',329:'中雪',332:'大雪',335:'大阵雪',338:'暴雪',350:'冰粒',353:'强阵雨',356:'强阵雨',359:'暴雨',362:'雨夹雪',365:'阵性雨夹雪',368:'小阵雪',371:'中阵雪',374:'小阵性冰雹',377:'冰粒',386:'雷阵雨',389:'强雷阵雨',392:'雷伴雪',395:'强雷伴雪'};
             var desc=ZH[c.weatherCode]||c.weatherDesc[0].value;
             draw(el,'温州现在 <em>'+c.temp_C+'°C</em> · '+desc+'<br>湿度 '+c.humidity+'% · 风 '+c.windspeedKmph+' km/h <span style="opacity:.6">（wttr.in 线路）</span>');
           });
@@ -273,28 +303,328 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
         .catch(function(){fail(el,'两条天气线路都没打通，稍后再抽。')});
     },
     fx:function(el){
-      jget('https://open.er-api.com/v6/latest/USD')
-        .then(function(d){var cny=d.rates&&d.rates.CNY;
+      jget('https://open.er-api.com/v6/latest/USD').then(function(d){var cny=d.rates&&d.rates.CNY;
           if(!cny)throw 0;
           draw(el,'1 USD = <em>'+cny.toFixed(4)+' CNY</em><br><span style="opacity:.6">更新时间 '+d.time_last_update_utc+'</span>')})
         .catch(function(){fail(el,'汇率接口没打通，稍后再抽。')});
     }
   };
-  document.querySelectorAll('[data-api]').forEach(function(b){
-    b.addEventListener('click',function(){F[b.dataset.api](R[b.dataset.api])});
+  document.querySelectorAll('[data-api]').forEach(function(b){b.addEventListener('click',function(){F[b.dataset.api](R[b.dataset.api])})});
+})();
+
+/* ===== 01 声音站：WAV 录音 + ASR + TTS ===== */
+(function(){
+  var micRing=document.getElementById('micRing'),micT=document.getElementById('micT'),
+      asrStatus=document.getElementById('asrStatus'),asrOut=document.getElementById('asrOut'),
+      ttsText=document.getElementById('ttsText'),ttsBtn=document.getElementById('ttsBtn'),
+      ttsStatus=document.getElementById('ttsStatus'),audio=document.getElementById('ttsAudio'),
+      wave=document.getElementById('wave'),vopts=document.querySelectorAll('.vopt[data-v]');
+  var voice='stella',rec=false,actx=null,proc=null,stream=null,chunks=[],recStart=0,animId=0;
+  if(!ECHO_API){
+    document.getElementById('offVoice').hidden=false;
+    ttsBtn.disabled=true;
+    return;
+  }
+  vopts.forEach(function(v){v.addEventListener('click',function(){vopts.forEach(function(o){o.classList.remove('on')});v.classList.add('on');voice=v.dataset.v})});
+  function wav(pcm,rate){
+    var n=pcm.length,buf=new ArrayBuffer(44+n*2),v=new DataView(buf),p=0;
+    function s(x){for(var i=0;i<x.length;i++)v.setUint8(p++,x.charCodeAt(i))}
+    function u32(x){v.setUint32(p,x,true);p+=4}
+    function u16(x){v.setUint16(p,x,true);p+=2}
+    s('RIFF');u32(36+n*2);s('WAVE');s('fmt ');u32(16);u16(1);u16(1);u32(rate);u32(rate*2);u16(2);u16(16);s('data');u32(n*2);
+    for(var i=0;i<n;i++,p+=2)v.setInt16(p,Math.max(-32768,Math.min(32767,pcm[i])),true);
+    return new Blob([v],{type:'audio/wav'});
+  }
+  function stop(){
+    rec=false;micRing.classList.remove('rec');
+    try{stream&&stream.getTracks().forEach(function(t){t.stop()});proc&&proc.disconnect();actx&&actx.close()}catch(e){}
+    if(!chunks.length){micT.textContent='没录到声音，重试';return}
+    var rate=actx.sampleRate||44100;
+    var blob=wav(chunks,rate);chunks=[];
+    asrStatus.className='status';asrStatus.textContent='转写中……';
+    var fd=new FormData();fd.append('file',blob,'speech.wav');
+    fetch(ECHO_API+'/api/asr',{method:'POST',body:fd,signal:AbortSignal.timeout?AbortSignal.timeout(180000):undefined})
+      .then(function(r){return r.json().then(function(j){j._status=r.status;return j})})
+      .then(function(j){
+        if(j._status!==200){asrStatus.className='status err';asrStatus.textContent=echoErr(j);return}
+        asrOut.value=j.text||'（没听清）';
+        if(j.charged!==undefined){spentBy.asr+=j.charged;updCost('asr')}
+        asrStatus.className='status';asrStatus.textContent='转写完成 · '+(j.duration_ms/1000).toFixed(1)+'s · ¥'+(j.charged||0).toFixed(3);
+      })
+      .catch(function(){asrStatus.className='status err';asrStatus.textContent='转写失败——后端唤醒中或网络问题，稍后再试'});
+  }
+  micRing.addEventListener('click',function(){
+    if(rec){stop();micT.textContent='已停止';return}
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){asrStatus.className='status err';asrStatus.textContent='浏览器不支持录音';return}
+    navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true}}).then(function(s){
+      stream=s;actx=new (window.AudioContext||window.webkitAudioContext)();
+      proc=actx.createScriptProcessor(4096,1,1);
+      var src=actx.createMediaStreamSource(s);
+      chunks=[];recStart=Date.now();rec=true;micRing.classList.add('rec');
+      micT.textContent='录音中…点击停止（最长 120 秒）';
+      proc.onaudioprocess=function(e){
+        if(!rec)return;
+        var d=e.inputBuffer.getChannelData(0);
+        for(var i=0;i<d.length;i++)chunks.push(d[i]);
+        if(Date.now()-recStart>=120000)stop();
+      };
+      src.connect(proc);proc.connect(actx.destination);
+    }).catch(function(){asrStatus.className='status err';asrStatus.textContent='麦克风权限被拒——浏览器地址栏里允许一下麦克风'});
+  });
+  function drawWave(){
+    var x=wave.getContext('2d');x.clearRect(0,0,wave.width,wave.height);
+    x.strokeStyle='rgba(120,180,255,.8)';x.lineWidth=1.5;x.beginPath();
+    var t=Date.now()/180;
+    for(var i=0;i<wave.width;i+=4){
+      var a=18*Math.abs(Math.sin(i*.05+t))*Math.abs(Math.sin(t*.7+i*.011))+2;
+      x.moveTo(i,32-a);x.lineTo(i,32+a);
+    }
+    x.stroke();
+    animId=requestAnimationFrame(drawWave);
+  }
+  document.getElementById('asrToTts').addEventListener('click',function(){if(asrOut.value.trim())ttsText.value=asrOut.value.trim().slice(0,2000)});
+  ttsBtn.addEventListener('click',function(){
+    var text=ttsText.value.trim();
+    if(!text){ttsStatus.className='status err';ttsStatus.textContent='先给点文字';return}
+    ttsBtn.disabled=true;ttsStatus.className='status';ttsStatus.textContent='合成中……（长文本要等一会）';
+    fetch(ECHO_API+'/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,2000),voice:voice}),signal:AbortSignal.timeout?AbortSignal.timeout(180000):undefined})
+      .then(function(r){
+        var charged=r.headers.get('X-Charged');
+        if(charged){spentBy.tts+=parseFloat(charged);updCost('tts')}
+        if(!r.ok)return r.json().then(function(j){throw j});
+        return r.blob();
+      })
+      .then(function(blob){
+        audio.hidden=false;audio.src=URL.createObjectURL(blob);audio.play();
+        wave.style.display='block';cancelAnimationFrame(animId);drawWave();
+        audio.onended=function(){cancelAnimationFrame(animId);wave.style.display='none'};
+        ttsStatus.className='status';ttsStatus.textContent='播放中';
+        ttsBtn.disabled=false;
+      })
+      .catch(function(j){
+        ttsStatus.className='status err';ttsStatus.textContent=echoErr(j&&j.error?j:null);ttsBtn.disabled=false;
+      });
   });
 })();
-/* ---- 03 3D：three.js 懒加载 + 拖拽行星 ---- */
+
+/* ===== 02 视觉站 ===== */
+(function(){
+  var drop=document.getElementById('drop'),img=document.getElementById('ocrImg'),
+      bar=document.getElementById('ocrBar'),st=document.getElementById('ocrStatus'),
+      out=document.getElementById('ocrText'),cp=document.getElementById('ocrCopy'),
+      cl=document.getElementById('ocrClear'),
+      engL=document.getElementById('engLocal'),engD=document.getElementById('engDs');
+  var engine='local',worker=null,loading=false,lastFile=null;
+  function setBar(p){bar.style.width=Math.round(p*100)+'%'}
+  function setStatus(s,cls){st.textContent=s;st.className=cls?('status '+cls):'status'}
+  function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('script'))};document.head.appendChild(s)})}
+  function enhance(file){
+    return new Promise(function(res){
+      var url=URL.createObjectURL(file),im=new Image();
+      im.onload=function(){
+        var w=im.naturalWidth,h=im.naturalHeight,sc=1;
+        if(Math.min(w,h)<1200&&Math.max(w,h)*2<=4200)sc=2;
+        var cv=document.createElement('canvas');cv.width=w*sc;cv.height=h*sc;
+        var x=cv.getContext('2d');
+        x.imageSmoothingEnabled=sc>1;x.imageSmoothingQuality='high';
+        x.drawImage(im,0,0,cv.width,cv.height);
+        var d;try{d=x.getImageData(0,0,cv.width,cv.height)}catch(e){res(file);return}
+        var px=d.data,hist=new Array(256).fill(0),sum=0;
+        for(var i=0;i<px.length;i+=4){var g=(px[i]*.299+px[i+1]*.587+px[i+2]*.114)|0;px[i]=px[i+1]=px[i+2]=g;hist[g]++;sum+=g}
+        var avg=sum/(px.length/4),invert=avg<110;
+        var tot=px.length/4,lo=0,hi=255,acc=0;
+        for(var v=0;v<256;v++){acc+=hist[v];if(acc>=tot*.02){lo=v;break}}
+        acc=0;for(var v=255;v>=0;v--){acc+=hist[v];if(acc>=tot*.02){hi=v;break}}
+        var span=Math.max(24,hi-lo);
+        for(var i=0;i<px.length;i+=4){
+          var g2=Math.max(0,Math.min(255,((px[i]-lo)*255/span)|0));
+          if(invert)g2=255-g2;
+          px[i]=px[i+1]=px[i+2]=g2;
+        }
+        x.putImageData(d,0,0);URL.revokeObjectURL(url);
+        cv.toBlob(function(b){res(b||file)},'image/png');
+      };
+      im.onerror=function(){res(file)};im.src=url;
+    });
+  }
+  function getWorker(){
+    if(worker)return Promise.resolve(worker);
+    if(loading)return Promise.reject(new Error('loading'));
+    loading=true;
+    setStatus('正在下载本地识别引擎（tesseract.js）……');
+    return loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js')
+      .then(function(){
+        if(!window.Tesseract)throw new Error('no-tesseract');
+        setStatus('正在下载本地语言包（约 15MB，仅首次）……');
+        return Tesseract.createWorker('chi_sim+eng',1,{logger:function(m){
+          if(m.status==='recognizing text'){setStatus('识别中……');setBar(.5+m.progress*.5)}
+          else{setBar(m.progress!==undefined?m.progress*.5:0);setStatus('准备本地语言包……')}
+        }});
+      })
+      .then(function(w){worker=w;loading=false;return w})
+      .catch(function(e){loading=false;throw e});
+  }
+  function runLocal(file){
+    setStatus('本地引擎识别中……');
+    getWorker().then(function(w){return w.recognize(file)})
+      .then(function(r){
+        var t=(r.data.text||'').trim();
+        out.value=t||'（没认出文字——试试 DeepSeek 高精度引擎）';
+        cp.disabled=!t;setBar(1);setStatus('完成（本地引擎 · 免费）');
+        drop.classList.remove('scanning');
+      })
+      .catch(function(){
+        setBar(0);setStatus('本地引擎加载失败（CDN 不可达）。可勾「DeepSeek 高精度」重试。','err');
+        drop.classList.remove('scanning');
+      });
+  }
+  function runDs(file){
+    if(!ECHO_API){setStatus('高精度引擎需要后端连接','err');drop.classList.remove('scanning');return}
+    setStatus('DeepSeek 高精度识别中（大文件较慢）……');
+    drop.classList.add('scanning');
+    var fd=new FormData();fd.append('file',file);
+    fetch(ECHO_API+'/api/ocr',{method:'POST',body:fd,signal:AbortSignal.timeout?AbortSignal.timeout(200000):undefined})
+      .then(function(r){return r.json().then(function(j){j._status=r.status;return j})})
+      .then(function(j){
+        drop.classList.remove('scanning');
+        if(j._status!==200){setStatus(echoErr(j),'err');return}
+        out.value=(j.text||'').replace(/<｜[^>]*｜>/g,'').trim();
+        if(j.charged!==undefined){spentBy.ocr+=j.charged;updCost('ocr')}
+        cp.disabled=!out.value;setBar(1);
+        setStatus('完成 · '+j.pages+' 页 · ¥'+(j.charged||0).toFixed(3));
+      })
+      .catch(function(){drop.classList.remove('scanning');setStatus('高精度识别失败——后端唤醒中或额度用完','err')});
+  }
+  function recognize(file){
+    if(!file||!/^image\//.test(file.type)){setStatus('请给一张图片（png / jpg / webp）','err');return}
+    lastFile=file;
+    img.hidden=false;img.src=URL.createObjectURL(file);
+    setBar(0);
+    if(engine==='ds')runDs(file);
+    else{setStatus('图片就绪，自动增强中（放大/灰度/反色）……');enhance(file).then(runLocal)}
+  }
+  engL.addEventListener('click',function(){engine='local';engL.classList.add('on');engD.classList.remove('on')});
+  engD.addEventListener('click',function(){engine='ds';engD.classList.add('on');engL.classList.remove('on');if(lastFile)recognize(lastFile)});
+  drop.addEventListener('click',function(){var i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=function(){recognize(i.files[0])};i.click()});
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('over')});
+  drop.addEventListener('dragleave',function(){drop.classList.remove('over')});
+  drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('over');recognize(e.dataTransfer.files[0])});
+  document.addEventListener('paste',function(e){
+    var items=(e.clipboardData||{}).items||[];
+    for(var i=0;i<items.length;i++)if(/^image\//.test(items[i].type)){recognize(items[i].getAsFile());break}
+  });
+  cp.addEventListener('click',function(){out.select();try{document.execCommand('copy')}catch(e){navigator.clipboard&&navigator.clipboard.writeText(out.value)}cp.textContent='已复制';setTimeout(function(){cp.textContent='复制文本'},1600)});
+  cl.addEventListener('click',function(){out.value='';img.hidden=true;img.removeAttribute('src');setBar(0);setStatus('待命');cp.disabled=true});
+})();
+
+/* ===== 03 联网站 ===== */
+(function(){
+  if(!ECHO_API){document.getElementById('offWeb').hidden=false;return}
+  var inp=document.getElementById('searchIn'),btn=document.getElementById('searchBtn'),list=document.getElementById('srList');
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function run(){
+    var q=inp.value.trim();
+    if(!q)return;
+    btn.disabled=true;btn.textContent='搜索中…';
+    echoPost('/api/search',{query:q,count:8},60000)
+      .then(function(j){
+        btn.disabled=false;btn.textContent='搜 索';
+        if(j._status!==200){list.innerHTML='<div class="status err">'+esc(echoErr(j))+'</div>';return}
+        if(j.charged){spentBy.search+=j.charged;updCost('search')}
+        var rs=j.results||[];
+        if(!rs.length){list.innerHTML='<div class="status">没有搜到结果（未计费）</div>';return}
+        list.innerHTML=rs.map(function(r,i){
+          return '<div class="sr" style="animation-delay:'+(i*.07)+'s"><h4><a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.title)+'</a></h4>'+
+            '<div class="meta">'+esc(r.site_name||'')+' · 权威度 '+r.authority+' · '+esc((r.date||'').slice(0,10))+'</div>'+
+            '<div class="snip">'+esc(r.snippet||r.summary||'')+'</div>'+
+            '<div class="acts"><button class="btn ghost" data-url="'+esc(r.url)+'">读全文 · ¥0.005</button></div>'+
+            '<div class="sr-full" hidden></div></div>';
+        }).join('');
+        list.querySelectorAll('[data-url]').forEach(function(b){
+          b.addEventListener('click',function(){
+            var box=b.parentElement.nextElementSibling;
+            if(!box.hidden){box.hidden=true;b.textContent='读全文 · ¥0.005';return}
+            b.disabled=true;b.textContent='抓取中…';
+            echoPost('/api/fetch',{url:b.dataset.url},90000)
+              .then(function(j){
+                b.disabled=false;
+                if(j._status!==200){box.hidden=false;box.textContent=echoErr(j);b.textContent='读全文 · ¥0.005';return}
+                if(j.charged){spentBy.fetch+=j.charged;updCost('fetch')}
+                box.hidden=false;box.textContent=(j.title?j.title+'\n\n':'')+(j.content||'（无可提取正文）');
+                b.textContent='收起';
+              }).catch(function(){b.disabled=false;b.textContent='读全文 · ¥0.005'});
+          });
+        });
+      })
+      .catch(function(){btn.disabled=false;btn.textContent='搜 索';list.innerHTML='<div class="status err">搜索失败——后端唤醒中（首次约 50 秒）或额度用完</div>'});
+  }
+  btn.addEventListener('click',run);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')run()});
+})();
+
+/* ===== 04 对话站（SSE 流式） ===== */
+(function(){
+  if(!ECHO_API){document.getElementById('offChat').hidden=false;return}
+  var box=document.getElementById('chatBox'),inp=document.getElementById('chatIn'),
+      btn=document.getElementById('chatBtn'),sw=document.getElementById('chatWeb');
+  var msgs=[];
+  function add(cls,t){var d=document.createElement('div');d.className='msg '+cls;d.textContent=t;box.appendChild(d);box.scrollTop=box.scrollHeight;return d}
+  function send(){
+    var t=inp.value.trim();
+    if(!t||btn.disabled)return;
+    inp.value='';btn.disabled=true;
+    msgs.push({role:'user',content:t});
+    add('u',t);
+    var a=add('a','…');
+    fetch(ECHO_API+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:msgs.slice(-16),web_search:sw.checked}),signal:AbortSignal.timeout?AbortSignal.timeout(180000):undefined})
+      .then(function(r){
+        if(!r.ok)return r.json().then(function(j){throw j});
+        var rd=r.body.getReader(),dec=new TextDecoder(),buf='',acc='';
+        function step(){
+          return rd.read().then(function(e){
+            if(e.done){
+              if(acc)msgs.push({role:'assistant',content:acc});
+              btn.disabled=false;return;
+            }
+            buf+=dec.decode(e.value,{stream:true});
+            var parts=buf.split('\n\n');buf=parts.pop();
+            parts.forEach(function(line){
+              line=line.trim();if(!line.startsWith('data:'))return;
+              var p=line.slice(5).trim();
+              if(p==='[DONE]')return;
+              try{
+                var j=JSON.parse(p);
+                if(j.usage&&j.usage.completion_tokens!==undefined){
+                  var cost=j.usage.prompt_tokens*1/1e6+j.usage.completion_tokens*2/1e6;
+                  if(cost>0){spentBy.chat+=cost;updCost('chat')}
+                }
+                var d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;
+                if(d){acc+=d;a.textContent=acc;box.scrollTop=box.scrollHeight}
+              }catch(err){}
+            });
+            return step();
+          });
+        }
+        return step();
+      })
+      .catch(function(j){
+        a.textContent=echoErr(j&&j.error?j:null);
+        btn.disabled=false;
+      });
+  }
+  btn.addEventListener('click',send);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+})();
+
+/* ===== 05 装饰站：3D 行星 ===== */
 (function(){
   try{
     var scene=document.getElementById('scene'),ld=document.getElementById('sceneLd');
-    var started=false;
     if(!scene)return;
-    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches){/*仍可加载，只是不自转*/}
+    var started=false;
     var io=new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if(e.isIntersecting&&!started){started=true;io.disconnect();boot()}
-      });
+      es.forEach(function(e){if(e.isIntersecting&&!started){started=true;io.disconnect();boot()}});
     },{threshold:.2});
     io.observe(scene);
     function boot(){
@@ -321,7 +651,6 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
       sc.add(new THREE.AmbientLight('#33507a',.9));
       var sun=new THREE.DirectionalLight('#cfe4ff',1.5);sun.position.set(4,5,6);sc.add(sun);
       var rim=new THREE.DirectionalLight('#4da3ff',.5);rim.position.set(-5,-2,-4);sc.add(rim);
-      // 低多边形行星：顶点噪声扰动
       var g=new THREE.IcosahedronGeometry(1.7,1);
       var pos=g.attributes.position;
       for(var i=0;i<pos.count;i++){
@@ -331,28 +660,21 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
       g.computeVertexNormals();
       var planet=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:'#4da3ff',flatShading:true,roughness:.55,metalness:.15}));
       sc.add(planet);
-      var land=new THREE.Mesh(new THREE.IcosahedronGeometry(1.72,1),new THREE.MeshStandardMaterial({color:'#0a1b3e',flatShading:true,roughness:.9}));
-      land.visible=false;
-      // 行星环
       var ring=new THREE.Mesh(new THREE.TorusGeometry(2.9,.10,8,48),new THREE.MeshStandardMaterial({color:'#cfe4ff',flatShading:true,roughness:.8,transparent:true,opacity:.55}));
       ring.rotation.x=1.25;sc.add(ring);
-      // 两颗卫星
       var m1=new THREE.Mesh(new THREE.IcosahedronGeometry(.22,0),new THREE.MeshStandardMaterial({color:'#f4f8fc',flatShading:true}));
       var m2=new THREE.Mesh(new THREE.IcosahedronGeometry(.15,0),new THREE.MeshStandardMaterial({color:'#8fbcff',flatShading:true}));
       sc.add(m1);sc.add(m2);
-      // 星尘
       var N=260,sp=new Float32Array(N*3);
       for(var i=0;i<N;i++){var th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=7+Math.random()*6;
         sp[i*3]=r*Math.sin(ph)*Math.cos(th);sp[i*3+1]=r*Math.cos(ph)*.6;sp[i*3+2]=r*Math.sin(ph)*Math.sin(th)}
       var sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
       sc.add(new THREE.Points(sg,new THREE.PointsMaterial({color:'#cfe4ff',size:.045,transparent:true,opacity:.7})));
-      // 拖拽旋转 + 惯性
       var vx=0,vy=0,drag=false,lx=0,ly=0,zoom=6.4;
       cvs.addEventListener('pointerdown',function(e){drag=true;lx=e.clientX;ly=e.clientY;cvs.setPointerCapture(e.pointerId)});
       cvs.addEventListener('pointermove',function(e){if(!drag)return;vx=(e.clientX-lx)*.006;vy=(e.clientY-ly)*.006;planet.rotation.y+=vx;planet.rotation.x+=vy;ring.rotation.z+=vx;lx=e.clientX;ly=e.clientY});
       cvs.addEventListener('pointerup',function(){drag=false});
       cvs.addEventListener('wheel',function(e){e.preventDefault();zoom=Math.min(11,Math.max(3.5,zoom+e.deltaY*.004))},{passive:false});
-      var reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
       var run=true;document.addEventListener('visibilitychange',function(){run=!document.hidden});
       var last=0;
       (function loop(ts){
@@ -370,9 +692,23 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
         renderer.render(sc,cam);
         requestAnimationFrame(loop);
       })();
-      var tip=scene.querySelector('.ld');if(tip)tip.remove();
+      if(ld)ld.remove();
     }
   }catch(e){}
+})();
+
+/* ===== hero 逐字入场 ===== */
+(function(){
+  var tt=document.getElementById('tt'),acc=0;
+  function put(chs,iEl){
+    chs.split('').forEach(function(ch){
+      var s=document.createElement('span');s.textContent=ch;s.style.animationDelay=(acc*.07)+'s';
+      (iEl||tt).appendChild(s);acc++;
+    });
+  }
+  put('喂点什么，');
+  var e=document.createElement('i');tt.appendChild(e);
+  put('听见回声',e);
 })();
 </script>
 </body>
