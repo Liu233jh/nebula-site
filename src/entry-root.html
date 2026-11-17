@@ -94,7 +94,7 @@ body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!i
   var t=0;
   (function frame(){
     t+=.016;ctx.clearRect(0,0,W,H);
-    for(var i=0;i<stars.length;i++){var s=stars[i];
+    if(!window.__meteorOnly)for(var i=0;i<stars.length;i++){var s=stars[i];
       var a=.35+.45*Math.abs(Math.sin(t*s.s+s.p));
       ctx.globalAlpha=a;ctx.fillStyle='#cfe4ff';
       ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,6.283);ctx.fill();
@@ -109,6 +109,99 @@ body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!i
     }
     requestAnimationFrame(frame);
   })();
+})();
+/* ---- three.js 粒子星系（3D 星空，失败/降级回 2D） ---- */
+(function(){
+  function ok2d(){return} // 2D 星空始终已运行，任何失败直接返回即降级
+  try{
+    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    if(window.matchMedia('(pointer:coarse)').matches)return;
+    if(innerWidth<900)return;
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+    s.async=true;
+    s.onerror=function(){ok2d()};
+    s.onload=function(){try{init()}catch(e){ok2d()}};
+    document.head.appendChild(s);
+    function init(){
+      if(!window.THREE)return;
+      var c=document.createElement('canvas');c.id='galaxy';
+      c.style.cssText='position:fixed;inset:0;z-index:0;pointer-events:none';
+      var sky=document.getElementById('sky');
+      if(!sky)return;
+      sky.parentNode.insertBefore(c,sky);
+      var renderer;
+      try{renderer=new THREE.WebGLRenderer({canvas:c,alpha:true,antialias:false,powerPreference:'low-power'})}
+      catch(e){c.parentNode.removeChild(c);return}
+      renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+      function size(){renderer.setSize(innerWidth,innerHeight,false)}
+      size();addEventListener('resize',size);
+      var scene=new THREE.Scene();
+      var cam=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,100);
+      cam.position.set(0,2.4,8.2);
+      cam.lookAt(0,0,0);
+      // 圆形光点贴图（避免方形像素）
+      var tc=document.createElement('canvas');tc.width=tc.height=64;
+      var tg=tc.getContext('2d');
+      var grd=tg.createRadialGradient(32,32,0,32,32,32);
+      grd.addColorStop(0,'rgba(255,255,255,1)');grd.addColorStop(.35,'rgba(255,255,255,.7)');grd.addColorStop(1,'rgba(255,255,255,0)');
+      tg.fillStyle=grd;tg.fillRect(0,0,64,64);
+      var dotTex=new THREE.CanvasTexture(tc);
+      // 螺旋星系粒子盘
+      var N=4200,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+      var inner=new THREE.Color('#dceaff'),mid=new THREE.Color('#8fbcff'),out=new THREE.Color('#3d7ef0');
+      for(var i=0;i<N;i++){
+        var r=Math.pow(Math.random(),.62)*5.2+.25;
+        var arm=(i%3)/3*Math.PI*2;
+        var spin=r*1.05;
+        var th=arm+spin+(Math.random()-.5)*(.55-r*.06);
+        var spread=(Math.random()-.5)*(Math.random()-.5)*2.2*(1.2-r*.16);
+        pos[i*3]=Math.cos(th)*r+ (Math.random()-.5)*.14;
+        pos[i*3+1]=spread;
+        pos[i*3+2]=Math.sin(th)*r+(Math.random()-.5)*.14;
+        var cc=r<1.2?inner.clone().lerp(mid,r/1.2):mid.clone().lerp(out,Math.min(1,(r-1.2)/3.4));
+        col[i*3]=cc.r;col[i*3+1]=cc.g;col[i*3+2]=cc.b;
+      }
+      var g=new THREE.BufferGeometry();
+      g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      g.setAttribute('color',new THREE.BufferAttribute(col,3));
+      var gal=new THREE.Points(g,new THREE.PointsMaterial({size:.055,map:dotTex,vertexColors:true,transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true}));
+      gal.rotation.x=.5;
+      scene.add(gal);
+      // 远景星星球壳
+      var M=700,sp=new Float32Array(M*3);
+      for(var i=0;i<M;i++){
+        var th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),rr=9+Math.random()*7;
+        sp[i*3]=rr*Math.sin(ph)*Math.cos(th);sp[i*3+1]=rr*Math.cos(ph)*.7;sp[i*3+2]=rr*Math.sin(ph)*Math.sin(th);
+      }
+      var sg=new THREE.BufferGeometry();
+      sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+      var shell=new THREE.Points(sg,new THREE.PointsMaterial({color:'#cfe4ff',size:.07,map:dotTex,transparent:true,opacity:.6,depthWrite:false}));
+      scene.add(shell);
+      // 鼠标视差
+      var tx=0,ty=0;
+      addEventListener('pointermove',function(e){
+        tx=(e.clientX/innerWidth-.5)*.9;ty=(e.clientY/innerHeight-.5)*.5;
+      },{passive:true});
+      var run=true;
+      document.addEventListener('visibilitychange',function(){run=!document.hidden});
+      var last=0;
+      (function loop(ts){
+        if(!run){requestAnimationFrame(loop);return}
+        ts=ts||0;
+        if(ts-last<16){requestAnimationFrame(loop);return}
+        last=ts;
+        gal.rotation.y+=.0007;
+        shell.rotation.y-=.0004;
+        cam.position.x+= (tx-cam.position.x)*.03;
+        cam.position.y+= (2.1-ty-cam.position.y)*.03;
+        cam.lookAt(0,0,0);
+        renderer.render(scene,cam);
+        requestAnimationFrame(loop);
+      })();
+      window.__meteorOnly=true; // 3D 接管星空，2D 只保留流星
+    }
+  }catch(e){ok2d()}
 })();
 (function(){
   var h=document.getElementById('tt');if(!h)return;
