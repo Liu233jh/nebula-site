@@ -633,7 +633,7 @@ function echoPost(path,body,timeout){
               if(p==='[DONE]')return;
               try{
                 var j=JSON.parse(p);
-                if(j._raw){think.textContent=j._raw;continue}
+                if(j._raw){think.textContent=j._raw;return}
                 if(j.usage&&j.usage.completion_tokens!==undefined){
                   var cost=j.usage.prompt_tokens*1/1e6+j.usage.completion_tokens*2/1e6;
                   if(cost>0){spentBy.chat+=cost;updCost('chat')}
