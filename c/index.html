@@ -118,7 +118,7 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
       </div>
       <div class="api">
         <h3>温州实况天气</h3>
-        <span class="src">open-meteo.com · 免 Key</span>
+        <span class="src">open-meteo + wttr.in 双线路 · 免 Key</span>
         <p class="res" id="rWeather">——</p>
         <button class="btn ghost" data-api="weather">抽一发</button>
       </div>
@@ -207,8 +207,9 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
   var R={hitokoto:document.getElementById('rHitokoto'),weather:document.getElementById('rWeather'),fx:document.getElementById('rFx')};
   function draw(el,html){el.classList.remove('err');el.innerHTML=html}
   function fail(el,msg){el.classList.add('err');el.textContent=msg}
-  function tmo(){var c=new AbortController();setTimeout(function(){c.abort()},5000);return c.signal}
-  function jget(u){return fetch(u,{signal:tmo()}).then(function(r){if(!r.ok)throw 0;return r.json()})}
+  function tmo(ms){var c=new AbortController();setTimeout(function(){c.abort()},ms||5000);return c.signal}
+  function jget(u,ms){return fetch(u,{signal:tmo(ms)}).then(function(r){if(!r.ok)throw 0;return r.json()})}
+  function jget2(u){return jget(u).catch(function(){return new Promise(function(res){setTimeout(function(){res(jget(u))},1500)})}).then(function(x){return x})}
   var F={
     hitokoto:function(el){
       jget('https://v1.hitokoto.cn/?c=a&c=b&c=k')
@@ -219,10 +220,19 @@ footer{margin-top:56px;font-size:10.5px;letter-spacing:.16em;color:rgba(5,13,31,
           draw(el,'「<em>'+k[0]+'</em>」<br>—— '+k[1])});
     },
     weather:function(el){
-      jget('https://api.open-meteo.com/v1/forecast?latitude=27.99&longitude=120.70&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FShanghai')
+      jget('https://api.open-meteo.com/v1/forecast?latitude=27.99&longitude=120.70&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FShanghai',8000)
         .then(function(d){var c=d.current||{};
           draw(el,'温州现在 <em>'+c.temperature_2m+'°C</em> · 湿度 '+c.relative_humidity_2m+'% · 风 '+(c.wind_speed_10m||0).toFixed(1)+' km/h<br><span style="opacity:.6">'+(new Date(c.time).toLocaleString('zh-CN'))+'</span>')})
-        .catch(function(){fail(el,'天气接口没打通，稍后再抽。')});
+        .catch(function(){
+          return jget2('https://wttr.in/Wenzhou?format=j1').then(function(d){
+            var c=d.current_condition&&d.current_condition[0];
+            if(!c)throw 0;
+            var ZH={113:'晴',116:'多云',119:'阴',122:'阴',143:'薄雾',176:'小雨',179:'小雪',182:'冻雨',185:'冻毛雨',200:'雷阵雨',227:'吹雪',230:'暴雪',248:'雾',260:'冻雾',263:'毛毛雨',266:'细雨',281:'冻细雨',284:'冻毛毛雨',293:'零星小雨',296:'小雨',299:'阵雨',302:'中雨',305:'大阵雨',308:'大雨',311:'冻雨',314:'强冻雨',317:'小冰雹',320:'大冰雹',323:'小阵雪',326:'阵雪',329:'中雪',332:'大雪',335:'大阵雪',338:'暴雪',350:'冰粒',353:'强阵雨',356:'强阵雨',359:'暴雨',362:'雨夹雪',365:'阵性雨夹雪',368:'小阵雪',371:'中阵雪',374:'小阵性冰雹',377:'冰粒',386:'雷阵雨',389:'强雷阵雨',392:'雷伴雪',395:'强雷伴雪'};
+            var desc=ZH[c.weatherCode]||c.weatherDesc[0].value;
+            draw(el,'温州现在 <em>'+c.temp_C+'°C</em> · '+desc+'<br>湿度 '+c.humidity+'% · 风 '+c.windspeedKmph+' km/h <span style="opacity:.6">（wttr.in 线路）</span>');
+          });
+        })
+        .catch(function(){fail(el,'两条天气线路都没打通，稍后再抽。')});
     },
     fx:function(el){
       jget('https://open.er-api.com/v6/latest/USD')
