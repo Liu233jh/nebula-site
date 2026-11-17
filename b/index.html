@@ -1067,6 +1067,7 @@ function go(name,push){
     setTimeout(function(){st.dispatchEvent(new Event('scroll'))},60);
   }
   revealAll();
+  if(name==='sites')setTimeout(outpostSwarm,280);
   if(name==='journal'&&window.__journalRoute)window.__journalRoute(slug);
   var bk=document.getElementById('backBtn');
   if(bk){var sub=name!=='home';bk.classList.toggle('show',sub);
@@ -1076,6 +1077,83 @@ function routeFromHash(){
   var h=location.hash||'';
   if(h.indexOf('#/')===0)return h.slice(2).split('?')[0]||'home';
   return null;
+}
+/* ---- 据点页：单光标搬运行星卡片（克制版 swarm） ---- */
+function outpostSwarm(){
+  try{
+    if(!matchMedia('(pointer:fine)').matches)return;
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    if(innerWidth<900)return;
+    try{if(sessionStorage.getItem('nebulaSwarmSites'))return}catch(e){return}
+    var grid=document.querySelector('.sites-grid');
+    if(!grid)return;
+    var cards=grid.querySelectorAll('.site');
+    if(cards.length<3)return;
+    try{sessionStorage.setItem('nebulaSwarmSites','1')}catch(e){}
+    var cv=document.createElement('canvas');cv.id='swarmSites';
+    document.body.appendChild(cv);
+    var ctx=cv.getContext('2d');
+    cv.width=innerWidth;cv.height=innerHeight;
+    grid.classList.add('swarming');
+    var ts=[];
+    for(var i=0;i<cards.length;i++){
+      var r=cards[i].getBoundingClientRect();
+      ts.push({x:r.left+r.width/2,y:r.top+r.height/2,el:cards[i],hit:false,ring:0});
+    }
+    var done=false,raf=0,t0=null,fading=false;
+    function finish(){
+      if(done)return;done=true;
+      if(raf)cancelAnimationFrame(raf);
+      if(cv&&cv.parentNode)cv.parentNode.removeChild(cv);
+      grid.classList.remove('swarming');
+      for(var i=0;i<ts.length;i++)ts[i].el.classList.add('on-board');
+    }
+    addEventListener('click',finish,true);
+    addEventListener('keydown',finish,true);
+    setTimeout(finish,9000);
+    var cur={x:-40,y:innerHeight+40};
+    var jobs=ts.map(function(t,i){return {t:t,start:.12+i*.3,dur:.52}});
+    function frame(ms){
+      if(done)return;
+      if(!t0)t0=ms;
+      var sec=(ms-t0)/1000;
+      ctx.clearRect(0,0,cv.width,cv.height);
+      var allHit=true;
+      for(var i=0;i<jobs.length;i++){
+        var j=jobs[i];
+        if(j.t.hit)continue;
+        allHit=false;
+        if(sec<j.start)continue;
+        var p=Math.min(1,(sec-j.start)/j.dur);
+        var e=1-Math.pow(1-p,3),u=1-e;
+        var prev=i===0?cur:{x:jobs[i-1].t.x,y:jobs[i-1].t.y};
+        var cx=(prev.x+j.t.x)/2+(i%2?-130:130),cy=(prev.y+j.t.y)/2-90;
+        cur.x=u*u*prev.x+2*u*e*cx+e*e*j.t.x;
+        cur.y=u*u*prev.y+2*u*e*cy+e*e*j.t.y;
+        var dx=j.t.x-prev.x,dy=j.t.y-prev.y,dl=Math.hypot(dx,dy)||1;
+        ctx.globalAlpha=.75;ctx.strokeStyle='rgba(30,90,200,.85)';ctx.lineWidth=1.8;
+        ctx.beginPath();ctx.moveTo(cur.x,cur.y);ctx.lineTo(cur.x-dx/dl*34,cur.y-dy/dl*34);ctx.stroke();
+        if(p>=1){j.t.hit=true;j.t.ring=sec;j.t.el.classList.add('on-board')}
+        else{
+          ctx.globalAlpha=1;ctx.fillStyle='#0a1b3e';
+          ctx.beginPath();ctx.moveTo(cur.x,cur.y);ctx.lineTo(cur.x-9,cur.y+11);ctx.lineTo(cur.x-4,cur.y+9);ctx.lineTo(cur.x-6,cur.y+14);ctx.closePath();ctx.fill();
+          ctx.fillStyle='#1e5ac8';ctx.beginPath();ctx.arc(cur.x,cur.y,2,0,6.283);ctx.fill();
+        }
+        ctx.globalAlpha=1;
+      }
+      for(var i=0;i<ts.length;i++){
+        if(ts[i].ring){
+          var a=(sec-ts[i].ring)/.55;
+          if(a<1){ctx.globalAlpha=(1-a)*.6;ctx.strokeStyle='rgba(30,90,200,.7)';ctx.lineWidth=1.5;
+            ctx.beginPath();ctx.arc(ts[i].x,ts[i].y,8+a*34,0,6.283);ctx.stroke()}
+        }
+      }
+      ctx.globalAlpha=1;
+      if(allHit&&!fading){fading=true;setTimeout(finish,650)}
+      if(!done)raf=requestAnimationFrame(frame);
+    }
+    raf=requestAnimationFrame(frame);
+  }catch(e){/* 静默降级 */}
 }
 window.addEventListener('hashchange',function(){
   var r=routeFromHash(); if(r)go(r);
@@ -1922,6 +2000,9 @@ setTimeout(revealAll,400);
 @media(max-width:1023px){.backbtn{top:calc(var(--hdr) + 4px);left:14px;padding:7px 14px 7px 12px;font-size:11px}}
 /* ---- 据点页：浏览器窗口卡片 ---- */
 .sites-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(430px,100%),1fr));gap:38px 34px;margin-top:46px}
+.sites-grid.swarming .site{opacity:0!important;transform:translateY(18px) scale(.985)!important;transition:none}
+.sites-grid.swarming .site.on-board{opacity:1!important;transform:none!important;transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1)}
+#swarmSites{position:fixed;inset:0;z-index:95;pointer-events:none}
 .site{display:block;text-decoration:none;color:inherit}
 .site .frame{display:block;border:1px solid rgba(5,13,31,.16);border-radius:10px 10px 6px 6px;overflow:hidden;
   background:#fff;box-shadow:0 16px 38px -20px rgba(5,13,31,.28);
