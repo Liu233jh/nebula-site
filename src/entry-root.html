@@ -141,10 +141,10 @@ body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!i
     var ctx=cv.getContext('2d');
     function size(){cv.width=innerWidth;cv.height=innerHeight}
     size();
-    // 目标清单：大块（有幽灵色块）+ 细节作业点（涟漪）
+    // 目标清单：大块（幽灵搬运）+ 细节（涟漪验收）
     var T=[];
     function push(el,kind,phase){if(!el)return;var r=el.getBoundingClientRect();if(r.width<4||r.height<4)return;
-      T.push({x:r.left,y:r.top,w:r.width,h:r.height,kind:kind,phase:phase,start:0,placed:false,ring:0})}
+      T.push({el:el,x:r.left,y:r.top,w:r.width,h:r.height,kind:kind,phase:phase,state:'pending',ring:0})}
     push(document.querySelector('mark'),'bar',0);
     push(document.getElementById('tt'),'title',1);
     var cards=document.querySelectorAll('.card');
@@ -155,82 +155,123 @@ body.swarm-play mark,body.swarm-play #tt span,body.swarm-play p{animation:none!i
       for(var k=0;k<inner.length;k++)push(inner[k],'chip',5+ci);
     }
     if(T.length<6){finish();return}
-    var grads={};
-    function ghost(t){
-      var x=t.x,y=t.y,w=t.w,h=t.h,r=Math.min(6,h/2);
-      ctx.globalAlpha=.9;
+    // 幽灵色块（可画在任意位置——pending 画占位框，carrying 跟随光标）
+    function ghost(t,px,py,sway){
+      var w=t.w,h=t.h;
+      var x=(px==null?t.x:px-w/2+Math.sin(sway)*3), y=(py==null?t.y:py-h/2+Math.cos(sway*.8)*2);
+      var r=Math.min(6,h/2);
+      ctx.globalAlpha=.92;
       if(t.kind==='bar'){ctx.fillStyle='#4DA3FF';rr(x,y,w,h,3);ctx.fill()}
       else if(t.kind==='title'){ctx.fillStyle='rgba(255,255,255,.92)';rr(x,y+h*.18,w,h*.5,4);ctx.fill()}
       else if(t.kind==='card'){ctx.fillStyle='rgba(255,255,255,.07)';rr(x,y,w,h,2);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1;rr(x,y,w,h,2);ctx.stroke()}
       else if(t.kind==='foot'){ctx.fillStyle='rgba(255,255,255,.4)';rr(x,y+h*.2,w,h*.55,3);ctx.fill()}
-      else{ctx.fillStyle='rgba(157,200,255,.5)';rr(x,y+h*.15,w,h*.5,3);ctx.fill()}
+      else{ctx.fillStyle='rgba(157,200,255,.55)';rr(x,y+h*.15,w,h*.5,3);ctx.fill()}
+      ctx.globalAlpha=1;
     }
     function rr(x,y,w,h,r){ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h)}
-    // 光标：每个目标一个
-    var cursors=T.map(function(t,i){
-      var edge=Math.random()*4,px,py;
-      if(edge===0){px=Math.random()*cv.width;py=-30}
-      else if(edge===1){px=cv.width+30;py=Math.random()*cv.height}
-      else if(edge===2){px=Math.random()*cv.width;py=cv.height+30}
-      else{px=-30;py=Math.random()*cv.height}
-      return {t:t,i:i,x0:px,y0:py,x:px,y:py,cx:(px+t.x+t.w/2)/2+(Math.random()-.5)*160,cy:(py+t.y+t.h/2)/2+(Math.random()-.5)*160,delay:i*0.09+Math.random()*.05,dur:.6+Math.random()*.3,p:0,placed:false,fade:1};
-    });
+    function dashed(t){
+      ctx.globalAlpha=.5;ctx.strokeStyle='rgba(120,180,255,.5)';ctx.lineWidth=1;
+      ctx.setLineDash([5,5]);rr(t.x,t.y,t.w,t.h,2);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+    }
+    // 光标：8 个施工队员轮转搬运全部目标
+    var NC=8, cursors=[], jobs=T.map(function(_,i){return i});
+    for(var i=0;i<NC;i++){
+      var edge=(i+Math.random()*2)%4,px,py;
+      if(edge<1){px=Math.random()*cv.width;py=-40}
+      else if(edge<2){px=cv.width+40;py=Math.random()*cv.height}
+      else if(edge<3){px=Math.random()*cv.width;py=cv.height+40}
+      else{px=-40;py=Math.random()*cv.height}
+      cursors.push({q:[],qi:0,x:px,y:py,px:px,py:py,cx:px,cy:py,delay:i*.14,dur:1.05+Math.random()*.3,st:'wait',t0:0,placedAt:0,fade:1});
+    }
+    for(var i=0;i<jobs.length;i++)cursors[i%NC].q.push(jobs[i]);
     var bg=ctx.createLinearGradient(0,0,cv.width*.55,cv.height);
     bg.addColorStop(0,'#050D1F');bg.addColorStop(1,'#0A1B3E');
     var t0=null,maskA=1,fading=false;
     addEventListener('resize',function(){size();if(!done){for(var i=0;i<T.length;i++){var r=T[i].el.getBoundingClientRect();T[i].x=r.left;T[i].y=r.top;T[i].w=r.width;T[i].h=r.height}}});
     addEventListener('click',finish,true);
     addEventListener('keydown',finish,true);
-    setTimeout(finish,4800);
+    setTimeout(finish,9500);
     function frame(ts){
       if(done)return;
       if(!t0)t0=ts;
       var sec=(ts-t0)/1000;
       ctx.clearRect(0,0,cv.width,cv.height);
-      // 背景（近似 body 渐变）
       ctx.globalAlpha=maskA;ctx.fillStyle=bg;ctx.fillRect(0,0,cv.width,cv.height);
-      var allPlaced=true;
+      var placedN=0,activeWork=false;
+      for(var i=0;i<T.length;i++)if(T[i].state==='placed')placedN++;
+      // 光标状态机
       for(var i=0;i<cursors.length;i++){
-        var c=cursors[i],t=c.t;
-        c.p=Math.max(0,Math.min(1,(sec-c.delay)/c.dur));
-        var e=1-Math.pow(1-c.p,3); // easeOutCubic
-        var u=1-e;
-        c.x=u*u*c.x0+2*u*e*c.cx+e*e*(t.x+t.w/2);
-        c.y=u*u*c.y0+2*u*e*c.cy+e*e*(t.y+t.h/2);
-        if(c.p>=1&&!c.placed){c.placed=true;t.placed=true;t.ring=sec;}
-        if(!c.placed)allPlaced=false;
-        if(c.placed&&c.fade>0)c.fade=Math.max(0,c.fade-.06);
+        var c=cursors[i];
+        if(c.st==='done'){c.fade=Math.max(0,c.fade-.02);continue}
+        var t=T[c.q[c.qi]];
+        if(t===undefined){c.st='done';continue}
+        if(c.st==='wait'){
+          if(sec>=c.delay){c.st='fly';c.t0=sec;
+            var tx=t.x+t.w/2,ty=t.y+t.h/2;
+            c.cx=(c.x+tx)/2+(Math.random()-.5)*180;c.cy=(c.y+ty)/2+(Math.random()-.5)*180;
+            c.sx=c.x;c.sy=c.y;}
+        }else if(c.st==='fly'){
+          var p=Math.max(0,Math.min(1,(sec-c.t0)/c.dur));
+          var e=1-Math.pow(1-p,3),u=1-e;
+          c.x=u*u*c.sx+2*u*e*c.cx+e*e*(t.x+t.w/2);
+          c.y=u*u*c.sy+2*u*e*c.cy+e*e*(t.y+t.h/2);
+          c.sway=sec*7;
+          if(p>=1){c.st='place';c.placedAt=sec}
+          activeWork=true;
+        }else if(c.st==='place'){
+          if(sec-c.placedAt>=.26){
+            t.state='placed';t.ring=sec;
+            c.qi++;
+            var nt=T[c.q[c.qi]];
+            if(nt===undefined){c.st='done'}
+            else{c.st='fly';c.t0=sec;
+              var tx2=nt.x+nt.w/2,ty2=nt.y+nt.h/2;
+              c.cx=(c.x+tx2)/2+(Math.random()-.5)*180;c.cy=(c.y+ty2)/2+(Math.random()-.5)*180;
+              c.sx=c.x;c.sy=c.y;}
+          }
+          activeWork=true;
+        }
       }
-      // 未放置目标的幽灵色块；已放置挖洞露出真实元素
+      // 目标绘制：pending 虚线框 / carrying 跟随 / placed 挖洞
       for(var i=0;i<T.length;i++){
         var t=T[i];
-        if(!t.placed){ghost(t);allPlaced=false}
-        else{ctx.save();ctx.globalAlpha=1;ctx.clearRect(t.x-2,t.y-2,t.w+4,t.h+4);ctx.restore()}
+        if(t.state==='pending')dashed(t);
+        else if(t.state==='placed'){ctx.save();ctx.globalAlpha=1;ctx.clearRect(t.x-2,t.y-2,t.w+4,t.h+4);ctx.restore()}
+      }
+      for(var i=0;i<cursors.length;i++){
+        var c=cursors[i];
+        if(c.st==='fly'||c.st==='place'){var t2=T[c.q[c.qi]];if(t2&&t2.state!=='placed')ghost(t2,c.x,c.y,c.sway||0)}
       }
       // 落位涟漪
       for(var i=0;i<T.length;i++){
         var t=T[i];
         if(t.ring){
-          var a=(sec-t.ring)/.55;
+          var a=(sec-t.ring)/.6;
           if(a<1){ctx.globalAlpha=(1-a)*.7;ctx.strokeStyle='#4DA3FF';ctx.lineWidth=1.5;
-            ctx.beginPath();ctx.arc(t.x+t.w/2,t.y+t.h/2,10+a*36,0,6.283);ctx.stroke()}
+            ctx.beginPath();ctx.arc(t.x+t.w/2,t.y+t.h/2,10+a*40,0,6.283);ctx.stroke()}
         }
       }
-      // 光标
+      // 光标绘制
       for(var i=0;i<cursors.length;i++){
         var c=cursors[i];
         if(c.fade<=0)continue;
         ctx.globalAlpha=c.fade;
-        ctx.strokeStyle='rgba(120,190,255,.45)';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(c.x,c.y);
-        ctx.lineTo(c.x-(c.x-c.cx)*.12,c.y-(c.y-c.cy)*.12);ctx.stroke();
+        var dx=c.x-(c.cx||c.x),dy=c.y-(c.cy||c.y),dl=Math.hypot(dx,dy)||1;
+        ctx.strokeStyle='rgba(120,190,255,.4)';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x-dx/dl*26,c.y-dy/dl*26);ctx.stroke();
         ctx.fillStyle='#eaf3ff';
         ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x-9,c.y+11);ctx.lineTo(c.x-4,c.y+9);ctx.lineTo(c.x-6,c.y+14);ctx.closePath();ctx.fill();
         ctx.fillStyle='#4DA3FF';ctx.beginPath();ctx.arc(c.x,c.y,2,0,6.283);ctx.fill();
       }
-      if(allPlaced&&!fading)fading=true,setTimeout(function(){fading='go'},420);
+      // 施工计数器
+      ctx.globalAlpha=.75;ctx.fillStyle='rgba(157,200,255,.8)';
+      ctx.font='10px ui-monospace,Menlo,monospace';
+      ctx.textAlign='right';
+      ctx.fillText('AGENTS '+NC+' \u00b7 PLACED '+placedN+'/'+T.length,cv.width-18,26);
+      ctx.textAlign='left';ctx.globalAlpha=1;
+      if(placedN>=T.length&&!fading)fading=true,setTimeout(function(){fading='go'},650);
       if(fading==='go'){
-        maskA-=.07;
+        maskA-=.05;
         if(maskA<=0){finish();return}
       }
       if(!done)raf=requestAnimationFrame(frame);
