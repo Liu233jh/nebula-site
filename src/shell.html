@@ -365,7 +365,7 @@ __HOME__
         <div class="smeta"><span class="sno">01</span>
           <h3>NEBULA · 入口</h3>
           <p>本站的大门——同一套内容的两个平行版本，只有人物动效不同：阻尼视差，或五弹簧木偶。</p>
-          <div class="stags"><span>双版本</span><span>星空开屏</span><span>零依赖</span></div>
+          <div class="stags"><span>双版本</span><span>3D 星系</span><span>粒子星空</span></div>
         </div>
       </a>
       <a class="site" data-rv href="https://daily-mashup.onrender.com" target="_blank" rel="noopener">
@@ -423,7 +423,8 @@ __HOME__
     <h1 class="bigtitle">造站日志，<em>每一版都留痕</em></h1>
     <p class="lead">从一张海报到五弹簧木偶，版本号只涨不跌。回滚有备份，前进有日志。</p>
     <ol class="btl">
-      <li data-rv><span class="bdg b-hot">当前版本</span><span class="vno">V14</span><p>入口页开屏——一群光标把页面搬回来：蓝图色块逐个就位，点击可跳过，24 小时内不会重播。</p></li>
+      <li data-rv><span class="bdg b-hot">当前版本</span><span class="vno">V15</span><p>入口星空升级 3D：three.js 粒子星系懒加载接管背景，4200 粒螺旋盘加鼠标视差；CDN 不通或低端设备自动退回 2D 星空，流星保留。</p></li>
+      <li data-rv><span class="vno">V14</span><p>入口页开屏——一群光标把页面搬回来：蓝图色块逐个就位，点击可跳过，24 小时内不会重播。</p></li>
       <li data-rv><span class="vno">V13</span><p>右肩摆动收敛：马尾上下层解耦不再互相拉扯，贴身发丝单独小幅飘，肩线稳稳贴在身上。</p></li>
       <li data-rv><span class="vno">V12</span><p>右肩粗线物归原主——上次错挂到马尾弹簧上的肩部轮廓线放回身体，发丝留原地继续飘。</p></li>
       <li data-rv><span class="vno">V11</span><p>马尾重新归层：贴身小束跟马尾一起飘，肩背线条固定不再跟着抖，呼吸起伏加深。</p></li>
@@ -448,7 +449,7 @@ __HOME__
         <p>NEBULA 是为了练习落地页设计而虚构的 AI 创作工作台。它不是真实服务，没有账号、没有计费、没有后端；页面上所有指标、套餐价格与功能描述都只是排版示例。</p>
         <p>这个站参考了公开落地页的设计技法——大字海报、套印标题、双层跑马灯、贯穿标尺——但代码、文案与插画都是重新写的。人物插画由 AI 生成后按发束分层，再用弹簧驱动作出摆动。</p>
         <h3>这个站怎么搭的</h3>
-        <p>单文件、原生 HTML/CSS/JS，没有任何前端框架和第三方动画库。所有插画与音乐以 base64 内嵌，因此离线也能打开。动画全部支持 <code>prefers-reduced-motion</code>，开启减少动态效果后会退回静态页面。</p>
+        <p>单文件、原生 HTML/CSS/JS，没有任何前端框架。平滑滚动用内联的 Lenis，入口星空用 CDN 懒加载的 three.js——加载失败或设备不支持时自动退回原生 2D 星空，浏览永远不会卡住。所有插画与音乐以 base64 内嵌，因此离线也能打开。动画全部支持 <code>prefers-reduced-motion</code>，开启减少动态效果后会退回静态页面。</p>
         <div class="pstack-wrap">
           <div class="pstack" data-mc>
             <img class="psp ps1" src="__G1__" data-cap="快门 01 · 起稿界面构成稿" alt="快门 01"><img class="psp ps2" src="__G2__" data-cap="快门 02 · 数据流波形稿" alt="快门 02"><img class="psp ps3" src="__G4__" data-cap="快门 03 · 轨道构成稿" alt="快门 03">
@@ -468,7 +469,7 @@ __HOME__
         </div>
         <ul class="spec">
           <li><b>STACK</b><span>HTML / CSS / 原生 JS</span></li>
-          <li><b>DEPENDENCY</b><span>0 个第三方库</span></li>
+          <li><b>DEPENDENCY</b><span>Lenis（内联）+ three.js（CDN 懒加载）</span></li>
           <li><b>PAGES</b><span>首页 / 作品 / 笔记 / 说说 / 据点 / 日志 / 关于</span></li>
           <li><b>MOTION</b><span>弹簧物理 + 滚动编排</span></li>
           <li><b>ILLUSTRATION</b><span>AI 生成，手工分层</span></li>
