@@ -92,6 +92,25 @@ A = shell.replace(ART, figA)
 B = shell.replace(ART, figB)
 assert '__ART__' not in B, 'B版人物未替换'
 
+# ---- 首屏关键图内嵌（高RTT线路下单请求优于13个排队请求；shots/music保持外链）----
+import base64 as _b64
+_REPO = os.path.abspath(os.path.join(SRC, '..'))
+
+def _embed(html):
+    def rep(m):
+        rel = m.group(1).split('/nebula-site/', 1)[1]   # assets/xx.webp | art/xx.png
+        fp = os.path.join(_REPO, *rel.split('/'))
+        try:
+            data = _b64.b64encode(open(fp, 'rb').read()).decode()
+            mime = 'image/webp' if m.group(1).endswith('.webp') else 'image/png'
+            return 'src="data:%s;base64,%s"' % (mime, data)
+        except Exception:
+            return m.group(0)
+    return re.sub(r'src="(https://liu233jh\.github\.io/nebula-site/(?:assets|art)/[^"]+)"', rep, html)
+
+A = _embed(A)
+B = _embed(B)
+
 os.makedirs(OUT + 'a', exist_ok=True)
 os.makedirs(OUT + 'b', exist_ok=True)
 open(OUT + 'a/index.html', 'w', encoding='utf-8').write(A)
