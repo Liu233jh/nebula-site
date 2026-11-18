@@ -73,18 +73,18 @@ ART = '<figure class="art" aria-hidden="true"><img src="__ART__" alt="" decoding
 ART_LOCAL = 'https://cdn.jsdelivr.net/gh/liu233jh/nebula-site@main/art'
 
 figB = ('<div class="pup" aria-hidden="true"><div class="pbody">'
-        f'<img class="pbase" src="{ART_LOCAL}/pbase.png" alt="">'
+        f'<img class="pbase" src="{ART_LOCAL}/pbase.webp" alt="">'
         f'<img class="eopen" src="{u("eopen")}" alt="">'
         f'<img class="eclosed" src="{u("eclosed")}" alt="">'
         f'<div class="pbangs"><img src="{u("bangs")}" alt=""></div>'
         f'<img class="pleft" src="{u("pleft")}" alt="">'
-        f'<img class="plow" src="{ART_LOCAL}/plow.png" alt="">'
+        f'<img class="plow" src="{ART_LOCAL}/plow.webp" alt="">'
         f'<div class="rtop"><img src="{u("rtop")}" alt=""></div>'
-        f'<img class="rbot" src="{ART_LOCAL}/rbot.png" alt="">'
+        f'<img class="rbot" src="{ART_LOCAL}/rbot.webp" alt="">'
         '</div></div>')
 
 os.makedirs(OUT + 'art', exist_ok=True)
-for f in ('pbase.png', 'rbot.png', 'plow.png'):
+for f in ('pbase.webp', 'rbot.webp', 'plow.webp'):
     open(OUT + 'art/' + f, 'wb').write(open(SRC + 'art/' + f, 'rb').read())
 print('art assets copied')
 
