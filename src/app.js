@@ -885,3 +885,17 @@ setTimeout(revealAll,400);
   }
   document.querySelectorAll('[data-gb]').forEach(mountG);
 })();
+
+/* ---------- CDN 503 自愈：加载失败的图延迟重载一次 ---------- */
+addEventListener('load',function(){
+  setTimeout(function(){
+    var imgs=document.images;
+    for(var i=0;i<imgs.length;i++){
+      var im=imgs[i];
+      if(im.complete&&im.naturalWidth===0&&im.src&&im.src.indexOf('http')===0){
+        (function(im){var s=im.src;im.src='data:,';
+          setTimeout(function(){im.src=s},1200)})(im);
+      }
+    }
+  },2500);
+});
